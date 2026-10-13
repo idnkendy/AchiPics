@@ -1,0 +1,6 @@
+{
+  "name": "ArchiPics — Nền Tảng Render & Tạo Ảnh Kiến Trúc AI",
+  "description": "Nền tảng AI hàng đầu hỗ trợ KTS & NTK kiến tạo không gian kiến trúc, nội thất, cải tạo, floor plan và quy hoạch đô thị AI.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
