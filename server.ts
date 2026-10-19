@@ -158,11 +158,9 @@ app.post('/api/generate-image', async (req, res) => {
         contents: parts,
         config: {
           responseModalities: ['TEXT', 'IMAGE'],
-          responseFormat: {
-            image: {
-              aspectRatio,
-              imageSize: requestedResolution,
-            },
+          imageConfig: {
+            aspectRatio,
+            imageSize: requestedResolution,
           },
         },
       });
