@@ -58,7 +58,7 @@ const MODE_CARDS: {
 ];
 
 export const ImageGenerator: React.FC = () => {
-  const { t, deductCredits, addHistoryItem, setActiveMainTool } = useApp();
+  const { t, user, deductCredits, addHistoryItem, setActiveMainTool } = useApp();
 
   const [selectedMode, setSelectedMode] = useState<RenderMode | null>(null);
 
@@ -79,6 +79,7 @@ export const ImageGenerator: React.FC = () => {
   );
 
   const [isGenerating, setIsGenerating] = useState(false);
+  const [generationError, setGenerationError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'results' | 'guide'>('results');
   const [generatedImages, setGeneratedImages] = useState<string[]>([
     ARCH_ASSETS.heroVilla,
@@ -120,25 +121,66 @@ export const ImageGenerator: React.FC = () => {
     }
   };
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     const cost = imageCount * 15;
-    const success = deductCredits(cost);
-    if (!success) {
-      alert('Bạn không đủ credits! Vui lòng nạp thêm để tiếp tục.');
+
+    if (!prompt.trim()) {
+      setGenerationError('Vui lòng nhập mô tả trước khi tạo ảnh.');
       return;
     }
 
-    setIsGenerating(true);
-    setTimeout(() => {
-      setIsGenerating(false);
-      const newImages = [
-        ARCH_ASSETS.heroVilla,
-        ARCH_ASSETS.heroInterior,
-        ARCH_ASSETS.renovationAfter,
-        ARCH_ASSETS.landscapeUrban,
-      ].slice(0, imageCount);
+    if (user.credits < cost) {
+      setGenerationError('Bạn không đủ credits! Vui lòng nạp thêm để tiếp tục.');
+      return;
+    }
 
-      setGeneratedImages(newImages);
+    setGenerationError(null);
+    setIsGenerating(true);
+
+    try {
+      const response = await fetch('/api/generate-image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prompt,
+          mode: selectedMode,
+          style,
+          buildingType,
+          lighting,
+          weather,
+          context,
+          aspectRatio,
+          resolution,
+          imageCount,
+          uploadedImage,
+          refImages,
+          hasWatermark,
+        }),
+      });
+
+      const data: { error?: string; images?: unknown } = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || `Yêu cầu tạo ảnh thất bại (${response.status}).`);
+      }
+
+      if (
+        !Array.isArray(data.images) ||
+        data.images.length !== imageCount ||
+        !data.images.every(
+          (image): image is string =>
+            typeof image === 'string' &&
+            image.startsWith('data:image/')
+        )
+      ) {
+        throw new Error('API không trả về đủ ảnh hợp lệ. Vui lòng thử lại.');
+      }
+
+      if (!deductCredits(cost)) {
+        throw new Error('Credits không đủ để hoàn tất thao tác.');
+      }
+
+      setGeneratedImages(data.images);
       setSelectedResultIndex(0);
       setActiveTab('results');
 
@@ -147,7 +189,7 @@ export const ImageGenerator: React.FC = () => {
         tool: 'render',
         toolName: 'Tạo Ảnh Kiến Trúc AI',
         prompt,
-        resultImage: newImages[0],
+        resultImage: data.images[0],
         originalImage: uploadedImage || undefined,
         createdAt: new Date().toLocaleString(),
         isFavorite: false,
@@ -155,7 +197,16 @@ export const ImageGenerator: React.FC = () => {
         style,
         cost,
       });
-    }, 2200);
+    } catch (error) {
+      console.error('Image generation failed:', error);
+      setGenerationError(
+        error instanceof Error
+          ? error.message
+          : 'Không thể tạo ảnh lúc này. Vui lòng thử lại.'
+      );
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   // 1. Mode Selection Dashboard (When no mode picked yet)
@@ -542,6 +593,15 @@ export const ImageGenerator: React.FC = () => {
               {imageCount * 15} Credits
             </span>
           </div>
+
+          {generationError && (
+            <p
+              role="alert"
+              className="mb-3 rounded-xl border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-xs leading-relaxed text-rose-300"
+            >
+              {generationError}
+            </p>
+          )}
 
           <button
             onClick={handleGenerate}
