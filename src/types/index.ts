@@ -41,6 +41,7 @@ export interface UserProfileData {
   expiryDate: string;
   avatarUrl?: string;
   isLoggedIn: boolean;
+  provider?: string;
 }
 
 export interface HistoryItem {

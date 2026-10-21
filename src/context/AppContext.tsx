@@ -10,6 +10,7 @@ import {
 } from '../types';
 import { translations } from '../i18n/translations';
 import { ARCH_ASSETS } from '../data/mockAssets';
+import { getCurrentSession, onSupabaseAuthStateChange, signOutSupabase } from '../lib/supabase';
 
 interface AppContextType {
   language: Language;
@@ -128,6 +129,45 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const [historyList, setHistoryList] = useState<HistoryItem[]>(INITIAL_HISTORY);
   const [notifications, setNotifications] = useState<NotificationItem[]>(INITIAL_NOTIFICATIONS);
+
+  // Sync Supabase Auth session on mount and listen to changes
+  useEffect(() => {
+    getCurrentSession().then((session) => {
+      if (session?.user) {
+        setUser({
+          id: session.user.id,
+          name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'KTS ArchiPics',
+          email: session.user.email || '',
+          avatarUrl: session.user.user_metadata?.avatar_url,
+          credits: 1250,
+          plan: 'Pro',
+          expiryDate: '15/12/2026',
+          isLoggedIn: true,
+          provider: session.user.app_metadata?.provider || 'supabase',
+        });
+      }
+    });
+
+    const unsubscribe = onSupabaseAuthStateChange((session, user) => {
+      if (session && user) {
+        setUser({
+          id: user.id,
+          name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'KTS ArchiPics',
+          email: user.email || '',
+          avatarUrl: user.user_metadata?.avatar_url,
+          credits: 1250,
+          plan: 'Pro',
+          expiryDate: '15/12/2026',
+          isLoggedIn: true,
+          provider: user.app_metadata?.provider || 'supabase',
+        });
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   // Sync HTML title & body classes
   useEffect(() => {
