@@ -12,6 +12,8 @@ import {
   CreditCard,
 } from 'lucide-react';
 
+import { signOutSupabase } from '../../lib/supabase';
+
 export const HomepageHeader: React.FC = () => {
   const {
     t,
@@ -37,8 +39,18 @@ export const HomepageHeader: React.FC = () => {
 
   const currentLangObj = LANGUAGES.find((l) => l.code === language) || LANGUAGES[0];
 
-  const handleLogout = () => {
-    setUser((prev) => ({ ...prev, isLoggedIn: false }));
+  const handleLogout = async () => {
+    await signOutSupabase();
+    setUser({
+      id: '',
+      name: 'Khách',
+      email: '',
+      phone: '',
+      credits: 0,
+      plan: 'Free',
+      expiryDate: '',
+      isLoggedIn: false,
+    });
     setIsAvatarOpen(false);
   };
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { User, CreditCard, History, Coins, Mail, Sparkles, ShieldCheck, Database, LogOut } from 'lucide-react';
+import { User, CreditCard, History, Coins, Mail, Phone, Sparkles, ShieldCheck, Database, LogOut } from 'lucide-react';
 import { signOutSupabase } from '../../lib/supabase';
 
 export const UserProfile: React.FC = () => {
@@ -24,6 +24,7 @@ export const UserProfile: React.FC = () => {
       id: 'guest',
       name: 'Khách',
       email: '',
+      phone: '',
       credits: 0,
       plan: 'Free',
       expiryDate: '',
@@ -31,6 +32,28 @@ export const UserProfile: React.FC = () => {
     });
     setActiveRoute('/');
   };
+
+  if (!user.isLoggedIn) {
+    return (
+      <div className="min-h-[calc(100vh-112px)] bg-[#0E1726] text-[#F1ECE2] flex items-center justify-center p-6">
+        <div className="max-w-md w-full p-8 rounded-3xl bg-[#121D30] border border-[#24304A] text-center space-y-4">
+          <div className="w-12 h-12 rounded-2xl bg-[#D9C9A3] text-[#0E1726] flex items-center justify-center font-bold text-xl mx-auto shadow-md">
+            <User className="w-6 h-6" />
+          </div>
+          <h2 className="text-xl font-bold text-[#F1ECE2]">Chưa đăng nhập</h2>
+          <p className="text-xs text-[#9AA3B5] leading-relaxed">
+            Vui lòng đăng nhập tài khoản để xem thông tin hồ sơ, số dư credits và nhật ký sử dụng.
+          </p>
+          <button
+            onClick={() => setActiveRoute('/auth')}
+            className="w-full py-3 rounded-xl bg-[#D9C9A3] hover:bg-[#E4D5B2] text-[#0E1726] font-bold text-xs transition-colors cursor-pointer shadow-md"
+          >
+            Đăng nhập ngay
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-[calc(100vh-112px)] bg-[#0E1726] text-[#F1ECE2] p-4 sm:p-8">
@@ -92,10 +115,18 @@ export const UserProfile: React.FC = () => {
                 </div>
                 <div>
                   <h2 className="text-xl font-bold text-[#F1ECE2]">{user.name}</h2>
-                  <p className="text-xs text-[#9AA3B5] flex items-center gap-1.5 mt-0.5">
-                    <Mail className="w-3.5 h-3.5" />
-                    <span>{user.email || 'Chưa liên kết email'}</span>
-                  </p>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 mt-1">
+                    <p className="text-xs text-[#9AA3B5] flex items-center gap-1.5">
+                      <Mail className="w-3.5 h-3.5" />
+                      <span>{user.email || 'Chưa liên kết email'}</span>
+                    </p>
+                    {user.phone && (
+                      <p className="text-xs text-[#9AA3B5] flex items-center gap-1.5">
+                        <Phone className="w-3.5 h-3.5" />
+                        <span>{user.phone}</span>
+                      </p>
+                    )}
+                  </div>
                   <div className="flex items-center gap-2 mt-2">
                     <span className="px-2.5 py-0.5 rounded-full bg-[#16213A] text-[#DDCDA8] text-[11px] font-bold border border-[#24304A]">
                       Gói: {user.plan}
