@@ -1,4 +1,4 @@
-export type Language = 'vi' | 'en' | 'ja' | 'ko' | 'zh' | 'fr' | 'es';
+export type Language = 'vi';
 
 export type ThemeMode = 'dark' | 'light';
 

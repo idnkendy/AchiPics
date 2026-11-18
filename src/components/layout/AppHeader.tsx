@@ -1,15 +1,12 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { LANGUAGES } from '../../i18n/translations';
 import {
   Coins,
   Bell,
-  ChevronDown,
   User,
   LogOut,
   Image as ImageIcon,
   Menu,
-  Check,
 } from 'lucide-react';
 
 import { signOutSupabase } from '../../lib/supabase';
@@ -17,8 +14,6 @@ import { signOutSupabase } from '../../lib/supabase';
 export const AppHeader: React.FC = () => {
   const {
     t,
-    language,
-    setLanguage,
     setActiveRoute,
     user,
     setUser,
@@ -27,11 +22,9 @@ export const AppHeader: React.FC = () => {
     setIsMobileMenuOpen,
   } = useApp();
 
-  const [isLangOpen, setIsLangOpen] = useState(false);
   const [isAvatarOpen, setIsAvatarOpen] = useState(false);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
 
-  const currentLangObj = LANGUAGES.find((l) => l.code === language) || LANGUAGES[0];
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 
   const handleLogout = async () => {
@@ -148,43 +141,6 @@ export const AppHeader: React.FC = () => {
               )}
             </div>
 
-            {/* Language Dropdown */}
-            <div className="relative">
-              <button
-                onClick={() => setIsLangOpen(!isLangOpen)}
-                className="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-[#121D30] border border-[#24304A] text-xs text-[#9AA3B5] hover:text-[#F1ECE2] hover:border-[#D9C9A3]/40 transition-colors cursor-pointer"
-                aria-label="Language Selector"
-              >
-                <span>{currentLangObj.flag}</span>
-                <ChevronDown className="w-3.5 h-3.5 text-[#9AA3B5]" />
-              </button>
-
-              {isLangOpen && (
-                <div className="absolute right-0 mt-2 w-44 bg-[#121D30] border border-[#24304A] rounded-xl shadow-2xl py-2 z-50">
-                  {LANGUAGES.map((lang) => (
-                    <button
-                      key={lang.code}
-                      onClick={() => {
-                        setLanguage(lang.code);
-                        setIsLangOpen(false);
-                      }}
-                      className={`w-full flex items-center justify-between px-3 py-2 text-xs text-left hover:bg-[#1C2944] transition-colors cursor-pointer ${
-                        language === lang.code
-                          ? 'text-[#D9C9A3] font-bold bg-[#16213A]'
-                          : 'text-[#9AA3B5]'
-                      }`}
-                    >
-                      <div className="flex items-center gap-2">
-                        <span>{lang.flag}</span>
-                        <span>{lang.name}</span>
-                      </div>
-                      {language === lang.code && <Check className="w-3.5 h-3.5 text-[#D9C9A3]" />}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
             {/* User Profile Avatar */}
             <div className="relative">
               <button
@@ -250,43 +206,6 @@ export const AppHeader: React.FC = () => {
           </>
         ) : (
           <>
-            {/* Language Dropdown for Guest */}
-            <div className="relative">
-              <button
-                onClick={() => setIsLangOpen(!isLangOpen)}
-                className="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-[#121D30] border border-[#24304A] text-xs text-[#9AA3B5] hover:text-[#F1ECE2] hover:border-[#D9C9A3]/40 transition-colors cursor-pointer"
-                aria-label="Language Selector"
-              >
-                <span>{currentLangObj.flag}</span>
-                <ChevronDown className="w-3.5 h-3.5 text-[#9AA3B5]" />
-              </button>
-
-              {isLangOpen && (
-                <div className="absolute right-0 mt-2 w-44 bg-[#121D30] border border-[#24304A] rounded-xl shadow-2xl py-2 z-50">
-                  {LANGUAGES.map((lang) => (
-                    <button
-                      key={lang.code}
-                      onClick={() => {
-                        setLanguage(lang.code);
-                        setIsLangOpen(false);
-                      }}
-                      className={`w-full flex items-center justify-between px-3 py-2 text-xs text-left hover:bg-[#1C2944] transition-colors cursor-pointer ${
-                        language === lang.code
-                          ? 'text-[#D9C9A3] font-bold bg-[#16213A]'
-                          : 'text-[#9AA3B5]'
-                      }`}
-                    >
-                      <div className="flex items-center gap-2">
-                        <span>{lang.flag}</span>
-                        <span>{lang.name}</span>
-                      </div>
-                      {language === lang.code && <Check className="w-3.5 h-3.5 text-[#D9C9A3]" />}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
             <button
               onClick={() => setActiveRoute('/auth')}
               className="px-4 py-1.5 rounded-full bg-[#D9C9A3] hover:bg-[#E4D5B2] text-[#0E1726] text-xs font-bold transition-all cursor-pointer shadow-md"

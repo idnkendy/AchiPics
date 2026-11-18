@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
-import { LANGUAGES } from '../../i18n/translations';
 import {
-  ChevronDown,
   Coins,
   User,
   LogOut,
@@ -17,15 +15,12 @@ import { signOutSupabase } from '../../lib/supabase';
 export const HomepageHeader: React.FC = () => {
   const {
     t,
-    language,
-    setLanguage,
     setActiveRoute,
     user,
     setUser,
   } = useApp();
 
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isLangOpen, setIsLangOpen] = useState(false);
   const [isAvatarOpen, setIsAvatarOpen] = useState(false);
   const [isMobileMenu, setIsMobileMenu] = useState(false);
 
@@ -36,8 +31,6 @@ export const HomepageHeader: React.FC = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  const currentLangObj = LANGUAGES.find((l) => l.code === language) || LANGUAGES[0];
 
   const handleLogout = async () => {
     await signOutSupabase();
@@ -103,38 +96,6 @@ export const HomepageHeader: React.FC = () => {
 
         {/* Right: Actions */}
         <div className="hidden md:flex items-center gap-3">
-          {/* Language Switcher */}
-          <div className="relative">
-            <button
-              onClick={() => setIsLangOpen(!isLangOpen)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#121D30] border border-[#24304A] text-xs text-[#9AA3B5] hover:text-[#F1ECE2] hover:border-[#D9C9A3]/40 transition-colors cursor-pointer"
-            >
-              <span>{currentLangObj.flag}</span>
-              <span className="font-medium">{currentLangObj.name}</span>
-              <ChevronDown className="w-3.5 h-3.5 text-[#9AA3B5]" />
-            </button>
-
-            {isLangOpen && (
-              <div className="absolute right-0 mt-2 w-44 bg-[#121D30] border border-[#24304A] rounded-xl shadow-2xl py-2 z-50">
-                {LANGUAGES.map((lang) => (
-                  <button
-                    key={lang.code}
-                    onClick={() => {
-                      setLanguage(lang.code);
-                      setIsLangOpen(false);
-                    }}
-                    className={`w-full flex items-center gap-2.5 px-3 py-2 text-xs text-left hover:bg-[#1C2944] transition-colors cursor-pointer ${
-                      language === lang.code ? 'text-[#D9C9A3] font-bold bg-[#16213A]' : 'text-[#9AA3B5]'
-                    }`}
-                  >
-                    <span>{lang.flag}</span>
-                    <span>{lang.name}</span>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
           {/* User Logged in / Guest */}
           {user.isLoggedIn ? (
             <div className="flex items-center gap-3">

@@ -6,11 +6,10 @@ import { PricingPlan } from '../../types';
 import { Check, Sparkles, ArrowRight, ShieldCheck, Zap, Receipt, Headphones, ChevronDown } from 'lucide-react';
 
 export const PublicPricing: React.FC = () => {
-  const { t, language, setActiveRoute, user, setSelectedPaymentPlan } = useApp();
-  const [currencyMode, setCurrencyMode] = useState<'VN' | 'GLOBAL'>(language === 'vi' ? 'VN' : 'GLOBAL');
+  const { t, setActiveRoute, user, setSelectedPaymentPlan } = useApp();
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
-  const vnPlans: PricingPlan[] = [
+  const plans: PricingPlan[] = [
     {
       id: 'starter',
       name: 'Starter',
@@ -66,61 +65,6 @@ export const PublicPricing: React.FC = () => {
     },
   ];
 
-  const globalPlans: PricingPlan[] = [
-    {
-      id: 'weekly',
-      name: 'Weekly Pass',
-      price: '$9.99',
-      period: '/week',
-      credits: '1,000 Credits',
-      creditsNumber: 1000,
-      features: [
-        '1,000 Fast Credits (~35 renders)',
-        '7-Day Unrestricted Access',
-        'All 18+ Core AI Architectural Tools',
-        'Full HD Resolution Export',
-        'Standard GPU Processing Queue',
-      ],
-    },
-    {
-      id: 'monthly-pro',
-      name: 'Monthly Pro',
-      price: '$29.99',
-      originalPrice: '$39.99',
-      period: '/month',
-      credits: '4,000 Credits',
-      creditsNumber: 4000,
-      isHot: true,
-      discountBadge: 'Save 25%',
-      features: [
-        '4,000 Fast Credits (~140 renders)',
-        '30-Day Dedicated Access',
-        'Ultra 4K Cinematic Resolution Export',
-        'All 18+ Extended AI Architecture Tools',
-        'Priority GPU Queue (3-second generation)',
-      ],
-    },
-    {
-      id: 'annual-studio',
-      name: 'Annual Studio',
-      price: '$199.99',
-      originalPrice: '$299.99',
-      period: '/year',
-      credits: '35,000 Credits',
-      creditsNumber: 35000,
-      discountBadge: 'Save 33%',
-      features: [
-        '35,000 Fast Credits (~1,200 renders)',
-        '365-Day Dedicated Access',
-        'Dedicated GPU Dedicated Fast Queue',
-        'Multi-seat Team Sharing (up to 5 seats)',
-        'Priority 24/7 VIP Engineering Support',
-      ],
-    },
-  ];
-
-  const plans = currencyMode === 'VN' ? vnPlans : globalPlans;
-
   const faqs = [
     {
       q: 'Credits được tính như thế nào khi render ảnh?',
@@ -167,30 +111,6 @@ export const PublicPricing: React.FC = () => {
             <p className="text-[#9AA3B5] text-sm sm:text-base mt-3 max-w-xl mx-auto leading-relaxed">
               {t('pricingSubtitle')}
             </p>
-
-            {/* Currency switcher toggle */}
-            <div className="mt-8 inline-flex items-center p-1 rounded-full bg-[#121D30] border border-[#24304A] shadow-inner">
-              <button
-                onClick={() => setCurrencyMode('VN')}
-                className={`px-5 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer ${
-                  currencyMode === 'VN'
-                    ? 'bg-[#D9C9A3] text-[#0E1726] font-bold shadow-sm'
-                    : 'text-[#9AA3B5] hover:text-[#F1ECE2]'
-                }`}
-              >
-                🇻🇳 Gói Việt Nam (VNĐ)
-              </button>
-              <button
-                onClick={() => setCurrencyMode('GLOBAL')}
-                className={`px-5 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer ${
-                  currencyMode === 'GLOBAL'
-                    ? 'bg-[#D9C9A3] text-[#0E1726] font-bold shadow-sm'
-                    : 'text-[#9AA3B5] hover:text-[#F1ECE2]'
-                }`}
-              >
-                🌐 Global Plans (USD)
-              </button>
-            </div>
           </div>
 
           {/* Pricing Cards Grid */}
