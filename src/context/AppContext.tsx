@@ -10,7 +10,16 @@ import {
 } from '../types';
 import { translations } from '../i18n/translations';
 import { ARCH_ASSETS } from '../data/mockAssets';
-import { getCurrentSession, onSupabaseAuthStateChange, signOutSupabase } from '../lib/supabase';
+import {
+  getCurrentSession,
+  onSupabaseAuthStateChange,
+  apiDeductCredits,
+  apiAddCredits,
+  apiSaveHistoryItem,
+  apiToggleFavoriteHistory,
+  apiDeleteHistoryItem,
+  apiRequest,
+} from '../lib/supabase';
 
 interface AppContextType {
   language: Language;
@@ -102,11 +111,22 @@ const INITIAL_NOTIFICATIONS: NotificationItem[] = [
   {
     id: 'notif-2',
     title: 'Chào mừng bạn đến với OPZEN AI!',
-    message: 'Tài khoản của bạn đã được kích hoạt gói Pro với 1,250 Credits.',
+    message: 'Tài khoản của bạn đã được kích hoạt gói Free với 60 Credits khởi tạo.',
     time: 'Hôm qua',
     isRead: true,
   },
 ];
+
+export const GUEST_USER: UserProfileData = {
+  id: '',
+  name: 'Khách',
+  email: '',
+  phone: '',
+  credits: 0,
+  plan: 'Free',
+  expiryDate: '',
+  isLoggedIn: false,
+};
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [language, setLanguage] = useState<Language>('vi');
@@ -117,54 +137,82 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [selectedPaymentPlan, setSelectedPaymentPlan] = useState<string | null>('pro');
 
-  const [user, setUser] = useState<UserProfileData>({
-    id: 'user-opzen-01',
-    name: 'KTS An Bình',
-    email: 'khavyauflowteam@gmail.com',
-    credits: 1250,
-    plan: 'Pro',
-    expiryDate: '15/12/2026',
-    isLoggedIn: true,
-  });
+  // Khởi tạo trạng thái mặc định là Khách (Chưa đăng nhập) - Chỉ đăng nhập khi có session Supabase thực sự
+  const [user, setUser] = useState<UserProfileData>(GUEST_USER);
 
   const [historyList, setHistoryList] = useState<HistoryItem[]>(INITIAL_HISTORY);
   const [notifications, setNotifications] = useState<NotificationItem[]>(INITIAL_NOTIFICATIONS);
 
   // Sync Supabase Auth session on mount and listen to changes
   useEffect(() => {
-    getCurrentSession().then((session) => {
+    let isMounted = true;
+
+    getCurrentSession().then(async (session) => {
+      if (!isMounted) return;
+
       if (session?.user) {
+        let syncedCredits = 60;
+        let syncedPlan: UserProfileData['plan'] = 'Free';
+        let syncedExpiry = 'Không giới hạn';
+        let syncedPhone = session.user.user_metadata?.phone || '';
+        let syncedName =
+          session.user.user_metadata?.full_name ||
+          session.user.email?.split('@')[0] ||
+          'KTS ArchiPics';
+
+        try {
+          const meRes = await apiRequest<{ ok: boolean; profile?: any }>('/api/auth/me');
+          if (meRes?.profile) {
+            syncedCredits = meRes.profile.credits ?? 60;
+            syncedPlan = (meRes.profile.plan as UserProfileData['plan']) || 'Free';
+            syncedExpiry = meRes.profile.expiry_date || 'Không giới hạn';
+            syncedPhone = meRes.profile.phone || syncedPhone;
+            syncedName = meRes.profile.name || syncedName;
+          }
+        } catch {
+          // Fallback to default values
+        }
+
         setUser({
           id: session.user.id,
-          name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'KTS ArchiPics',
+          name: syncedName,
           email: session.user.email || '',
+          phone: syncedPhone,
           avatarUrl: session.user.user_metadata?.avatar_url,
-          credits: 1250,
-          plan: 'Pro',
-          expiryDate: '15/12/2026',
+          credits: syncedCredits,
+          plan: syncedPlan,
+          expiryDate: syncedExpiry,
           isLoggedIn: true,
           provider: session.user.app_metadata?.provider || 'supabase',
         });
+      } else {
+        // Không có session hợp lệ -> đảm bảo luôn là Khách chưa đăng nhập
+        setUser(GUEST_USER);
       }
     });
 
-    const unsubscribe = onSupabaseAuthStateChange((session, user) => {
-      if (session && user) {
+    const unsubscribe = onSupabaseAuthStateChange((session, authUser) => {
+      if (!isMounted) return;
+      if (session && authUser) {
         setUser({
-          id: user.id,
-          name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'KTS ArchiPics',
-          email: user.email || '',
-          avatarUrl: user.user_metadata?.avatar_url,
-          credits: 1250,
-          plan: 'Pro',
-          expiryDate: '15/12/2026',
+          id: authUser.id,
+          name: authUser.user_metadata?.full_name || authUser.email?.split('@')[0] || 'KTS ArchiPics',
+          email: authUser.email || '',
+          phone: authUser.user_metadata?.phone || '',
+          avatarUrl: authUser.user_metadata?.avatar_url,
+          credits: 60,
+          plan: 'Free',
+          expiryDate: 'Không giới hạn',
           isLoggedIn: true,
-          provider: user.app_metadata?.provider || 'supabase',
+          provider: authUser.app_metadata?.provider || 'supabase',
         });
+      } else {
+        setUser(GUEST_USER);
       }
     });
 
     return () => {
+      isMounted = false;
       unsubscribe();
     };
   }, []);
@@ -195,8 +243,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const deductCredits = (amount: number): boolean => {
+    if (!user.isLoggedIn) {
+      setActiveRoute('/auth');
+      return false;
+    }
     if (user.credits >= amount) {
       setUser((prev) => ({ ...prev, credits: prev.credits - amount }));
+      apiDeductCredits(user.id, amount, `Sử dụng công cụ AI (${activeMainTool})`).catch(() => {});
       return true;
     }
     return false;
@@ -204,20 +257,31 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const addCredits = (amount: number) => {
     setUser((prev) => ({ ...prev, credits: prev.credits + amount }));
+    apiAddCredits(user.id, amount, `Nạp thêm +${amount} Credits`).catch(() => {});
   };
 
   const addHistoryItem = (item: HistoryItem) => {
     setHistoryList((prev) => [item, ...prev]);
+    apiSaveHistoryItem({ ...item, userId: user.id }).catch(() => {});
   };
 
   const toggleFavorite = (id: string) => {
+    let nextState = true;
     setHistoryList((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, isFavorite: !item.isFavorite } : item))
+      prev.map((item) => {
+        if (item.id === id) {
+          nextState = !item.isFavorite;
+          return { ...item, isFavorite: nextState };
+        }
+        return item;
+      })
     );
+    apiToggleFavoriteHistory(id, nextState).catch(() => {});
   };
 
   const deleteHistoryItem = (id: string) => {
     setHistoryList((prev) => prev.filter((item) => item.id !== id));
+    apiDeleteHistoryItem(id).catch(() => {});
   };
 
   const markNotificationsRead = () => {

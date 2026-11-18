@@ -1,77 +1,20 @@
-# AchiPics — AI Architecture Image Platform
+<div align="center">
+<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
+</div>
 
-AchiPics is an AI-powered platform for architectural visualization and image creation. It brings together tools for generating and editing images, renovating spaces, creating floor plans, and exploring architectural design workflows.
+# Run and deploy your AI Studio app
 
-## Key Features
+This contains everything you need to run your app locally.
 
-- AI image generation and image editing
-- Architecture and interior renovation tools
-- Floor plan tools
-- View synchronization
-- User authentication and profile pages
-- Image history management
-- Pricing and payment pages
-- Contact and terms pages
-- Additional architecture-focused tools
+View your app in AI Studio: https://ai.studio/apps/77f1cc59-3f93-4423-9197-bc8b70252b28
 
-## Tech Stack
+## Run Locally
 
-- React
-- TypeScript
-- Vite
-- Tailwind CSS
-- Google GenAI SDK
+**Prerequisites:**  Node.js
 
-## Requirements
 
-- Node.js
-- npm
-
-## Getting Started
-
-1. Clone the repository:
-
-   ```bash
-   git clone https://github.com/idnkendy/AchiPics.git
-   cd AchiPics
-   ```
-
-2. Install dependencies:
-
-   ```bash
-   npm install
-   ```
-
-3. Configure the environment variables required by the application. Refer to `.env.example` and provide your own API key where needed. Never commit API keys or other secrets.
-
-4. Start the development server:
-
-   ```bash
-   npm run dev
-   ```
-
-5. Build the application:
-
-   ```bash
-   npm run build
-   ```
-
-## Project Structure
-
-- `src/components/layout/` — shared application layout and navigation
-- `src/components/pages/` — application pages
-- `src/components/tools/` — image generation, editing, and architecture tools
-- `src/` — application source code
-
-## Development
-
-Before submitting changes, run:
-
-```bash
-npm run build
-git diff --check
-```
-
-## Security
-
-Keep API keys and local environment files private. Commit `.env.example` only when it contains placeholders and no secrets.
+1. Install dependencies:
+   `npm install`
+2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
+3. Run the app:
+   `npm run dev`

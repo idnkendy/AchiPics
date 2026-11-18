@@ -36,6 +36,7 @@ export interface UserProfileData {
   id: string;
   name: string;
   email: string;
+  phone?: string;
   credits: number;
   plan: 'Starter' | 'Pro' | 'Ultra' | 'Free';
   expiryDate: string;
@@ -55,7 +56,21 @@ export interface HistoryItem {
   isFavorite: boolean;
   aspectRatio: string;
   style?: string;
-  cost: number;
+  cost?: number;
+}
+
+export interface GenerationJobItem {
+  id: string;
+  userId?: string;
+  tool: string;
+  prompt: string;
+  resultImage?: string;
+  originalImage?: string;
+  aspectRatio?: string;
+  status: 'pending' | 'processing' | 'completed' | 'failed';
+  errorMessage?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface PricingPlan {
