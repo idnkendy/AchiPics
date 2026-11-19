@@ -23,7 +23,7 @@ import { ContactPage } from './components/pages/ContactPage';
 import { TermsPage } from './components/pages/TermsPage';
 
 const AppContent: React.FC = () => {
-  const { activeRoute, activeMainTool, activeExtendedTool } = useApp();
+  const { activeRoute, activeMainTool, activeExtendedTool, theme } = useApp();
 
   // 1. Standalone pages
   if (activeRoute === '/') {
@@ -52,7 +52,9 @@ const AppContent: React.FC = () => {
 
   // 2. Workspace pages with AppHeader (64px) + NavigationBar (48px)
   return (
-    <div className="min-h-screen flex flex-col bg-[#0E1726] text-[#F1ECE2] transition-colors">
+    <div className={`min-h-screen flex flex-col transition-colors ${
+      theme === 'light' ? 'bg-[#F8F5EE] text-[#121D30]' : 'bg-[#0E1726] text-[#F1ECE2]'
+    }`}>
       <AppHeader />
       <NavigationBar />
 

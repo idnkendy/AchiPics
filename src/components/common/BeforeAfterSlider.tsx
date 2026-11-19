@@ -46,7 +46,9 @@ export const BeforeAfterSlider: React.FC<BeforeAfterSliderProps> = ({
       onMouseLeave={() => setIsDragging(false)}
       onMouseMove={handleMouseMove}
       onTouchMove={handleTouchMove}
-      className={`relative w-full aspect-16/9 sm:aspect-16/10 rounded-2xl overflow-hidden select-none cursor-ew-resize border border-[#302839] shadow-2xl bg-black ${className}`}
+      className={`relative w-full aspect-16/9 sm:aspect-16/10 rounded-2xl overflow-hidden select-none cursor-ew-resize border shadow-2xl ${
+        className.includes('border-') ? '' : 'border-[#302839]'
+      } ${className.includes('bg-') ? '' : 'bg-black'} ${className}`}
     >
       {/* After image (full width behind) */}
       <img

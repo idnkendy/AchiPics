@@ -130,7 +130,14 @@ export const GUEST_USER: UserProfileData = {
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [language, setLanguage] = useState<Language>('vi');
-  const [theme, setTheme] = useState<ThemeMode>('dark');
+  const [theme, setTheme] = useState<ThemeMode>(() => {
+    try {
+      const saved = localStorage.getItem('achipics_theme');
+      return saved === 'light' ? 'light' : 'dark';
+    } catch {
+      return 'dark';
+    }
+  });
   const [activeRoute, setActiveRoute] = useState<string>('/');
   const [activeMainTool, setActiveMainTool] = useState<MainToolType>('render');
   const [activeExtendedTool, setActiveExtendedTool] = useState<ExtendedToolType | null>(null);
@@ -219,23 +226,27 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   // Sync HTML title & body classes
   useEffect(() => {
-    // If route is '/', homepage is strictly Deep Navy
-    if (activeRoute === '/') {
+    if (theme === 'dark') {
       document.documentElement.classList.add('dark');
+      document.documentElement.classList.remove('light');
       document.body.className = 'bg-[#0E1726] text-[#F1ECE2] selection:bg-[#D9C9A3] selection:text-[#0E1726] antialiased';
     } else {
-      if (theme === 'dark') {
-        document.documentElement.classList.add('dark');
-        document.body.className = 'bg-[#0E1726] text-[#F1ECE2] selection:bg-[#D9C9A3] selection:text-[#0E1726] antialiased';
-      } else {
-        document.documentElement.classList.remove('dark');
-        document.body.className = 'bg-[#F6F0E2] text-[#0E1726] selection:bg-[#D9C9A3] selection:text-[#0E1726] antialiased';
-      }
+      document.documentElement.classList.remove('dark');
+      document.documentElement.classList.add('light');
+      document.body.className = 'bg-[#F8F5EE] text-[#121D30] selection:bg-[#D9C9A3] selection:text-[#0E1726] antialiased';
     }
-  }, [theme, activeRoute]);
+  }, [theme]);
 
   const toggleTheme = () => {
-    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+    setTheme((prev) => {
+      const next = prev === 'dark' ? 'light' : 'dark';
+      try {
+        localStorage.setItem('achipics_theme', next);
+      } catch {
+        // Ignore
+      }
+      return next;
+    });
   };
 
   const t = (key: string): string => {

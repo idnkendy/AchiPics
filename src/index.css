@@ -39,6 +39,25 @@
     --total-header-h: 112px;
   }
 
+  html.light, :root.light {
+    --bg-primary: #F8F5EE;
+    --bg-elevated: #FFFFFF;
+    --bg-card: #FFFFFF;
+    --bg-hover: #EFE8D8;
+    --bg-subtle: #FAF7F0;
+
+    --border-primary: #E2D9C8;
+    --border-subtle: #ECE5D8;
+    --border-accent: #D9C9A3;
+
+    --text-primary: #121D30;
+    --text-secondary: #57657E;
+    --text-tertiary: #8792A6;
+    --text-accent: #8E733D;
+
+    --header-bg: rgba(248, 245, 238, 0.90);
+  }
+
   body {
     font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background-color: var(--bg-primary);

@@ -31,7 +31,10 @@ export const NavigationBar: React.FC = () => {
     setActiveExtendedTool,
     isMobileMenuOpen,
     setIsMobileMenuOpen,
+    theme,
   } = useApp();
+
+  const isLight = theme === 'light';
 
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
@@ -76,15 +79,21 @@ export const NavigationBar: React.FC = () => {
   return (
     <>
       <div
-        className={`fixed top-[64px] left-0 right-0 z-30 h-[48px] bg-[#0E1726]/95 backdrop-blur-xl border-b border-[#24304A] transition-transform duration-300 ${
-          isVisible ? 'translate-y-0' : '-translate-y-full'
-        }`}
+        className={`fixed top-[64px] left-0 right-0 z-30 h-[48px] backdrop-blur-xl border-b transition-all duration-300 ${
+          isLight
+            ? 'bg-[#FDFBF7]/95 border-[#E2D9C8] text-[#121D30]'
+            : 'bg-[#0E1726]/95 border-[#24304A] text-[#F1ECE2]'
+        } ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}
       >
         <div className="max-w-[1200px] mx-auto h-full px-4 sm:px-6 flex items-center justify-between">
           {/* Left: Home Button */}
           <button
             onClick={() => setActiveRoute('/')}
-            className="w-8 h-8 rounded-full flex items-center justify-center text-[#9AA3B5] hover:text-[#F1ECE2] bg-[#121D30] hover:bg-[#1C2944] border border-[#24304A] transition-all cursor-pointer shadow-xs"
+            className={`w-8 h-8 rounded-full flex items-center justify-center border transition-all cursor-pointer shadow-xs ${
+              isLight
+                ? 'text-[#57657E] hover:text-[#121D30] bg-[#F0EAE0] hover:bg-[#E5DDCB] border-[#E2D9C8]'
+                : 'text-[#9AA3B5] hover:text-[#F1ECE2] bg-[#121D30] hover:bg-[#1C2944] border-[#24304A]'
+            }`}
             title="Về Trang Chủ"
             aria-label="Home"
           >
@@ -92,20 +101,32 @@ export const NavigationBar: React.FC = () => {
           </button>
 
           {/* Center: Main Pill Navigation Container */}
-          <div className="hidden sm:flex items-center gap-1 p-1 rounded-full bg-[#121D30] border border-[#24304A] shadow-inner">
+          <div
+            className={`hidden sm:flex items-center gap-1 p-1 rounded-full border shadow-inner ${
+              isLight
+                ? 'bg-[#F0EAE0] border-[#E2D9C8]'
+                : 'bg-[#121D30] border-[#24304A]'
+            }`}
+          >
             {mainTools.map((tool, idx) => {
               const Icon = tool.icon;
               const isActive = activeMainTool === tool.id && !activeExtendedTool && activeRoute === '/image';
               return (
                 <React.Fragment key={tool.id}>
                   {idx > 0 && (
-                    <span className="w-px h-3.5 bg-[#24304A] my-auto mx-0.5" />
+                    <span
+                      className={`w-px h-3.5 my-auto mx-0.5 ${
+                        isLight ? 'bg-[#E2D9C8]' : 'bg-[#24304A]'
+                      }`}
+                    />
                   )}
                   <button
                     onClick={() => handleToolSelect(tool.id)}
                     className={`flex items-center gap-1.5 px-3.5 py-1 text-xs transition-all duration-200 cursor-pointer ${
                       isActive
                         ? 'bg-[#D9C9A3] text-[#0E1726] font-bold rounded-full shadow-sm'
+                        : isLight
+                        ? 'text-[#57657E] hover:text-[#121D30] rounded-full hover:bg-[#E5DDCB]'
                         : 'text-[#9AA3B5] hover:text-[#F1ECE2] rounded-full hover:bg-[#1C2944]'
                     }`}
                   >
@@ -117,7 +138,11 @@ export const NavigationBar: React.FC = () => {
             })}
 
             {/* Separator before Extended Dropdown */}
-            <span className="w-px h-3.5 bg-[#24304A] my-auto mx-0.5" />
+            <span
+              className={`w-px h-3.5 my-auto mx-0.5 ${
+                isLight ? 'bg-[#E2D9C8]' : 'bg-[#24304A]'
+              }`}
+            />
 
             {/* Mở rộng Dropdown Button */}
             <div className="relative">
@@ -126,6 +151,8 @@ export const NavigationBar: React.FC = () => {
                 className={`flex items-center gap-1 px-3 py-1 text-xs rounded-full transition-all cursor-pointer ${
                   activeExtendedTool
                     ? 'bg-[#D9C9A3] text-[#0E1726] font-bold shadow-sm'
+                    : isLight
+                    ? 'text-[#57657E] hover:text-[#121D30] hover:bg-[#E5DDCB]'
                     : 'text-[#9AA3B5] hover:text-[#F1ECE2] hover:bg-[#1C2944]'
                 }`}
               >
@@ -135,8 +162,18 @@ export const NavigationBar: React.FC = () => {
 
               {/* Extended Tools Menu Dropdown */}
               {isExtendedDropdownOpen && (
-                <div className="absolute left-1/2 -translate-x-1/2 mt-2 w-72 bg-[#121D30] border border-[#24304A] rounded-2xl shadow-2xl p-2 z-50">
-                  <div className="px-3 py-1.5 border-b border-[#24304A] mb-1">
+                <div
+                  className={`absolute left-1/2 -translate-x-1/2 mt-2 w-72 border rounded-2xl shadow-2xl p-2 z-50 ${
+                    isLight
+                      ? 'bg-[#FFFFFF] border-[#E2D9C8] text-[#121D30]'
+                      : 'bg-[#121D30] border-[#24304A] text-[#F1ECE2]'
+                  }`}
+                >
+                  <div
+                    className={`px-3 py-1.5 border-b mb-1 ${
+                      isLight ? 'border-[#E2D9C8]' : 'border-[#24304A]'
+                    }`}
+                  >
                     <p className="text-[11px] font-bold uppercase tracking-wider text-[#DDCDA8]">
                       Công cụ mở rộng AI (13 công cụ)
                     </p>
@@ -231,6 +268,8 @@ export const NavigationBar: React.FC = () => {
             className={`flex items-center gap-1.5 px-3 py-1 text-xs rounded-full border transition-all cursor-pointer ${
               activeRoute === '/history'
                 ? 'bg-[#D9C9A3] text-[#0E1726] font-bold border-[#D9C9A3]'
+                : isLight
+                ? 'text-[#57657E] hover:text-[#121D30] bg-[#F0EAE0] hover:bg-[#E5DDCB] border-[#E2D9C8]'
                 : 'text-[#9AA3B5] hover:text-[#F1ECE2] bg-[#121D30] hover:bg-[#1C2944] border-[#24304A]'
             }`}
             title="Lịch Sử Tạo Ảnh"

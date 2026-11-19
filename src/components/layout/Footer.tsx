@@ -2,10 +2,17 @@ import React from 'react';
 import { useApp } from '../../context/AppContext';
 
 export const Footer: React.FC = () => {
-  const { setActiveRoute, setActiveMainTool } = useApp();
+  const { setActiveRoute, setActiveMainTool, theme } = useApp();
+  const isLight = theme === 'light';
 
   return (
-    <footer className="bg-[#111B2D] border-t border-[#24304A] text-[#646E84] text-xs">
+    <footer
+      className={`border-t text-xs transition-colors ${
+        isLight
+          ? 'bg-[#F2EDE2] border-[#E2D9C8] text-[#57657E]'
+          : 'bg-[#111B2D] border-[#24304A] text-[#646E84]'
+      }`}
+    >
       <div className="max-w-[1100px] mx-auto px-6 py-14">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-8 mb-10">
           {/* Brand Col */}
@@ -20,11 +27,17 @@ export const Footer: React.FC = () => {
               <div className="w-8 h-8 rounded-lg bg-[#D9C9A3] flex items-center justify-center text-[#0E1726] font-extrabold text-[15px] tracking-tight group-hover:scale-105 transition-transform">
                 A
               </div>
-              <span className="text-lg font-bold text-[#F1ECE2] tracking-tight group-hover:text-[#D9C9A3] transition-colors">
+              <span
+                className={`text-lg font-bold tracking-tight transition-colors ${
+                  isLight
+                    ? 'text-[#121D30] group-hover:text-[#8E733D]'
+                    : 'text-[#F1ECE2] group-hover:text-[#D9C9A3]'
+                }`}
+              >
                 AchiPics
               </span>
             </div>
-            <p className="text-xs text-[#646E84] leading-relaxed max-w-[280px]">
+            <p className={`text-xs leading-relaxed max-w-[280px] ${isLight ? 'text-[#57657E]' : 'text-[#646E84]'}`}>
               Nền tảng AI chuyên biệt hỗ trợ Kiến trúc sư & Nhà thiết kế tạo ảnh render chất lượng cao.
             </p>
 
@@ -32,7 +45,11 @@ export const Footer: React.FC = () => {
             <div className="flex gap-2 pt-2">
               <a
                 href="#"
-                className="w-9 h-9 rounded-full bg-[#16213A] border border-[#24304A] flex items-center justify-center text-[#646E84] hover:text-[#F1ECE2] hover:border-[#D9C9A3]/40 transition-all"
+                className={`w-9 h-9 rounded-full border flex items-center justify-center transition-all ${
+                  isLight
+                    ? 'bg-[#FFFFFF] border-[#E2D9C8] text-[#57657E] hover:text-[#121D30] hover:border-[#8E733D]/50'
+                    : 'bg-[#16213A] border-[#24304A] text-[#646E84] hover:text-[#F1ECE2] hover:border-[#D9C9A3]/40'
+                }`}
                 aria-label="Facebook"
               >
                 <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current">
@@ -41,7 +58,11 @@ export const Footer: React.FC = () => {
               </a>
               <a
                 href="#"
-                className="w-9 h-9 rounded-full bg-[#16213A] border border-[#24304A] flex items-center justify-center text-[#646E84] hover:text-[#F1ECE2] hover:border-[#D9C9A3]/40 transition-all"
+                className={`w-9 h-9 rounded-full border flex items-center justify-center transition-all ${
+                  isLight
+                    ? 'bg-[#FFFFFF] border-[#E2D9C8] text-[#57657E] hover:text-[#121D30] hover:border-[#8E733D]/50'
+                    : 'bg-[#16213A] border-[#24304A] text-[#646E84] hover:text-[#F1ECE2] hover:border-[#D9C9A3]/40'
+                }`}
                 aria-label="YouTube"
               >
                 <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current">
@@ -50,7 +71,11 @@ export const Footer: React.FC = () => {
               </a>
               <a
                 href="mailto:contact@achipics.com"
-                className="w-9 h-9 rounded-full bg-[#16213A] border border-[#24304A] flex items-center justify-center text-[#646E84] hover:text-[#F1ECE2] hover:border-[#D9C9A3]/40 transition-all"
+                className={`w-9 h-9 rounded-full border flex items-center justify-center transition-all ${
+                  isLight
+                    ? 'bg-[#FFFFFF] border-[#E2D9C8] text-[#57657E] hover:text-[#121D30] hover:border-[#8E733D]/50'
+                    : 'bg-[#16213A] border-[#24304A] text-[#646E84] hover:text-[#F1ECE2] hover:border-[#D9C9A3]/40'
+                }`}
                 aria-label="Email"
               >
                 <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current">
@@ -62,7 +87,11 @@ export const Footer: React.FC = () => {
 
           {/* Sản phẩm */}
           <div>
-            <h3 className="text-xs font-semibold text-[#9AA3B5] uppercase tracking-[1px] mb-3.5">
+            <h3
+              className={`text-xs font-semibold uppercase tracking-[1px] mb-3.5 ${
+                isLight ? 'text-[#121D30]' : 'text-[#9AA3B5]'
+              }`}
+            >
               Sản phẩm
             </h3>
             <ul className="space-y-2">
@@ -72,7 +101,9 @@ export const Footer: React.FC = () => {
                     setActiveMainTool('render');
                     setActiveRoute('/image');
                   }}
-                  className="hover:text-[#F1ECE2] transition-colors cursor-pointer text-left"
+                  className={`transition-colors cursor-pointer text-left ${
+                    isLight ? 'hover:text-[#121D30]' : 'hover:text-[#F1ECE2]'
+                  }`}
                 >
                   Render Kiến Trúc
                 </button>
@@ -83,7 +114,9 @@ export const Footer: React.FC = () => {
                     setActiveMainTool('render');
                     setActiveRoute('/image');
                   }}
-                  className="hover:text-[#F1ECE2] transition-colors cursor-pointer text-left"
+                  className={`transition-colors cursor-pointer text-left ${
+                    isLight ? 'hover:text-[#121D30]' : 'hover:text-[#F1ECE2]'
+                  }`}
                 >
                   Render Nội Thất
                 </button>
@@ -94,7 +127,9 @@ export const Footer: React.FC = () => {
                     setActiveMainTool('renovation');
                     setActiveRoute('/image');
                   }}
-                  className="hover:text-[#F1ECE2] transition-colors cursor-pointer text-left"
+                  className={`transition-colors cursor-pointer text-left ${
+                    isLight ? 'hover:text-[#121D30]' : 'hover:text-[#F1ECE2]'
+                  }`}
                 >
                   Cải Tạo Không Gian
                 </button>
@@ -105,7 +140,9 @@ export const Footer: React.FC = () => {
                     setActiveMainTool('floorplan');
                     setActiveRoute('/image');
                   }}
-                  className="hover:text-[#F1ECE2] transition-colors cursor-pointer text-left"
+                  className={`transition-colors cursor-pointer text-left ${
+                    isLight ? 'hover:text-[#121D30]' : 'hover:text-[#F1ECE2]'
+                  }`}
                 >
                   Floor Plan 3D
                 </button>
@@ -115,14 +152,20 @@ export const Footer: React.FC = () => {
 
           {/* Tài nguyên */}
           <div>
-            <h3 className="text-xs font-semibold text-[#9AA3B5] uppercase tracking-[1px] mb-3.5">
+            <h3
+              className={`text-xs font-semibold uppercase tracking-[1px] mb-3.5 ${
+                isLight ? 'text-[#121D30]' : 'text-[#9AA3B5]'
+              }`}
+            >
               Tài nguyên
             </h3>
             <ul className="space-y-2">
               <li>
                 <button
                   onClick={() => setActiveRoute('/pricing')}
-                  className="hover:text-[#F1ECE2] transition-colors cursor-pointer text-left"
+                  className={`transition-colors cursor-pointer text-left ${
+                    isLight ? 'hover:text-[#121D30]' : 'hover:text-[#F1ECE2]'
+                  }`}
                 >
                   Bảng giá
                 </button>
@@ -133,7 +176,9 @@ export const Footer: React.FC = () => {
                     setActiveMainTool('render');
                     setActiveRoute('/image');
                   }}
-                  className="hover:text-[#F1ECE2] transition-colors cursor-pointer text-left"
+                  className={`transition-colors cursor-pointer text-left ${
+                    isLight ? 'hover:text-[#121D30]' : 'hover:text-[#F1ECE2]'
+                  }`}
                 >
                   Hướng dẫn
                 </button>
@@ -141,7 +186,9 @@ export const Footer: React.FC = () => {
               <li>
                 <button
                   onClick={() => setActiveRoute('/contacts')}
-                  className="hover:text-[#F1ECE2] transition-colors cursor-pointer text-left"
+                  className={`transition-colors cursor-pointer text-left ${
+                    isLight ? 'hover:text-[#121D30]' : 'hover:text-[#F1ECE2]'
+                  }`}
                 >
                   Blog & Cẩm nang
                 </button>
@@ -151,14 +198,20 @@ export const Footer: React.FC = () => {
 
           {/* Pháp lý */}
           <div>
-            <h3 className="text-xs font-semibold text-[#9AA3B5] uppercase tracking-[1px] mb-3.5">
+            <h3
+              className={`text-xs font-semibold uppercase tracking-[1px] mb-3.5 ${
+                isLight ? 'text-[#121D30]' : 'text-[#9AA3B5]'
+              }`}
+            >
               Pháp lý
             </h3>
             <ul className="space-y-2">
               <li>
                 <button
                   onClick={() => setActiveRoute('/terms-of-service')}
-                  className="hover:text-[#F1ECE2] transition-colors cursor-pointer text-left"
+                  className={`transition-colors cursor-pointer text-left ${
+                    isLight ? 'hover:text-[#121D30]' : 'hover:text-[#F1ECE2]'
+                  }`}
                 >
                   Điều khoản dịch vụ
                 </button>
@@ -166,7 +219,9 @@ export const Footer: React.FC = () => {
               <li>
                 <button
                   onClick={() => setActiveRoute('/terms-of-service')}
-                  className="hover:text-[#F1ECE2] transition-colors cursor-pointer text-left"
+                  className={`transition-colors cursor-pointer text-left ${
+                    isLight ? 'hover:text-[#121D30]' : 'hover:text-[#F1ECE2]'
+                  }`}
                 >
                   Chính sách bảo mật
                 </button>
@@ -174,7 +229,9 @@ export const Footer: React.FC = () => {
               <li>
                 <button
                   onClick={() => setActiveRoute('/contacts')}
-                  className="hover:text-[#F1ECE2] transition-colors cursor-pointer text-left"
+                  className={`transition-colors cursor-pointer text-left ${
+                    isLight ? 'hover:text-[#121D30]' : 'hover:text-[#F1ECE2]'
+                  }`}
                 >
                   Liên hệ
                 </button>
@@ -184,8 +241,12 @@ export const Footer: React.FC = () => {
         </div>
 
         {/* Footer bottom */}
-        <div className="pt-6 border-t border-[#24304A] text-center">
-          <p className="text-[#646E84] text-xs">
+        <div
+          className={`pt-6 border-t text-center ${
+            isLight ? 'border-[#E2D9C8]' : 'border-[#24304A]'
+          }`}
+        >
+          <p className={`text-xs ${isLight ? 'text-[#57657E]' : 'text-[#646E84]'}`}>
             © 2025 AchiPics. All rights reserved.
           </p>
         </div>
