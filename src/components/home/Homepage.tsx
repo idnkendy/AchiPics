@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '../../context/AppContext';
 import { HomepageHeader } from '../layout/HomepageHeader';
 import { Footer } from '../layout/Footer';
@@ -19,16 +19,47 @@ export const Homepage: React.FC = () => {
   ];
 
   const [ci, setCi] = useState(0);
+  const [isCarouselPaused, setIsCarouselPaused] = useState(false);
+  const carouselDragStartX = useRef<number | null>(null);
+  const carouselDragged = useRef(false);
 
   useEffect(() => {
+    if (isCarouselPaused) return;
     const timer = setInterval(() => {
       setCi((prev) => (prev + 1) % cImgs.length);
-    }, 4000);
+    }, 4500);
     return () => clearInterval(timer);
-  }, [cImgs.length]);
+  }, [cImgs.length, isCarouselPaused]);
 
   const cNext = () => setCi((prev) => (prev + 1) % cImgs.length);
   const cPrev = () => setCi((prev) => (prev - 1 + cImgs.length) % cImgs.length);
+
+  const handleCarouselPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    carouselDragStartX.current = e.clientX;
+    carouselDragged.current = false;
+    setIsCarouselPaused(true);
+  };
+
+  const handleCarouselPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (carouselDragStartX.current === null) return;
+    if (Math.abs(e.clientX - carouselDragStartX.current) > 8) {
+      carouselDragged.current = true;
+    }
+  };
+
+  const handleCarouselPointerEnd = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (carouselDragStartX.current === null) return;
+    const deltaX = e.clientX - carouselDragStartX.current;
+    carouselDragStartX.current = null;
+    setIsCarouselPaused(false);
+
+    if (deltaX <= -40) {
+      cNext();
+    } else if (deltaX >= 40) {
+      cPrev();
+    }
+  };
 
   const getPosition = (index: number) => {
     const n = cImgs.length;
@@ -221,31 +252,41 @@ export const Homepage: React.FC = () => {
           </div>
 
           {/* 3D Carousel */}
-          <div className="relative max-w-[880px] mx-auto mt-14 h-[260px] sm:h-[380px] perspective-[1200px]" id="carousel">
+          <div
+            className="relative max-w-[880px] mx-auto mt-14 h-[260px] sm:h-[380px] perspective-[1200px] select-none touch-pan-y cursor-grab active:cursor-grabbing"
+            id="carousel"
+            onMouseEnter={() => setIsCarouselPaused(true)}
+            onMouseLeave={() => {
+              setIsCarouselPaused(false);
+              carouselDragStartX.current = null;
+            }}
+            onPointerDown={handleCarouselPointerDown}
+            onPointerMove={handleCarouselPointerMove}
+            onPointerUp={handleCarouselPointerEnd}
+            onPointerCancel={handleCarouselPointerEnd}
+            onDragStart={(e) => e.preventDefault()}
+          >
             <div className="relative w-full h-full flex items-center justify-center">
               {cImgs.map((src, i) => {
                 const pos = getPosition(i);
                 let transformStyle = '';
                 let zIndex = 1;
                 let opacity = 0;
-                let filter = 'none';
 
                 if (pos === 'center') {
-                  transformStyle = 'translateX(0) scale(1)';
+                  transformStyle = 'translate3d(0, 0, 0) scale(1)';
                   zIndex = 3;
                   opacity = 1;
                 } else if (pos === 'left') {
-                  transformStyle = 'translateX(-38%) scale(0.78) rotateY(16deg)';
+                  transformStyle = 'translate3d(-38%, 0, -40px) scale(0.78) rotateY(16deg)';
                   zIndex = 2;
-                  opacity = isLight ? 0.5 : 0.35;
-                  filter = 'blur(1.5px)';
+                  opacity = isLight ? 0.6 : 0.42;
                 } else if (pos === 'right') {
-                  transformStyle = 'translateX(38%) scale(0.78) rotateY(-16deg)';
+                  transformStyle = 'translate3d(38%, 0, -40px) scale(0.78) rotateY(-16deg)';
                   zIndex = 2;
-                  opacity = isLight ? 0.5 : 0.35;
-                  filter = 'blur(1.5px)';
+                  opacity = isLight ? 0.6 : 0.42;
                 } else {
-                  transformStyle = 'scale(0.5)';
+                  transformStyle = 'translate3d(0, 0, -120px) scale(0.5)';
                   opacity = 0;
                 }
 
@@ -253,6 +294,7 @@ export const Homepage: React.FC = () => {
                   <div
                     key={i}
                     onClick={() => {
+                      if (carouselDragged.current) return;
                       if (pos === 'left') cPrev();
                       else if (pos === 'right') cNext();
                       else setActiveRoute('/image');
@@ -261,8 +303,11 @@ export const Homepage: React.FC = () => {
                       transform: transformStyle,
                       zIndex,
                       opacity,
-                      filter,
-                      transition: 'all 0.65s cubic-bezier(0.4, 0, 0.15, 1)',
+                      willChange: 'transform, opacity',
+                      backfaceVisibility: 'hidden',
+                      transitionProperty: 'transform, opacity',
+                      transitionDuration: '550ms',
+                      transitionTimingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)',
                     }}
                     className={`absolute w-[78%] sm:w-[62%] aspect-16/10 rounded-2xl overflow-hidden border cursor-pointer ${
                       isLight
@@ -270,7 +315,13 @@ export const Homepage: React.FC = () => {
                         : 'border-[#24304A] bg-[#16213A] shadow-2xl'
                     }`}
                   >
-                    <img src={src} alt={`Render ${i + 1}`} className="w-full h-full object-cover" loading="lazy" />
+                    <img
+                      src={src}
+                      alt={`Render ${i + 1}`}
+                      draggable={false}
+                      decoding="async"
+                      className="w-full h-full object-cover select-none pointer-events-none"
+                    />
                   </div>
                 );
               })}

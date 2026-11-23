@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 
 interface BeforeAfterSliderProps {
   beforeImage: string;
@@ -15,38 +15,152 @@ export const BeforeAfterSlider: React.FC<BeforeAfterSliderProps> = ({
   afterLabel = 'AI Render (After)',
   className = '',
 }) => {
-  const [sliderPosition, setSliderPosition] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
 
-  const handleMove = useCallback((clientX: number) => {
-    if (!containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    const x = clientX - rect.left;
-    let position = (x / rect.width) * 100;
-    if (position < 2) position = 2;
-    if (position > 98) position = 98;
-    setSliderPosition(position);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const beforeLayerRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+
+  const positionRef = useRef(50);
+  const isDraggingRef = useRef(false);
+  const rectRef = useRef<DOMRect | null>(null);
+  const rafIdRef = useRef<number | null>(null);
+  const pendingClientXRef = useRef<number | null>(null);
+
+  const applyPosition = useCallback((pos: number) => {
+    const clamped = Math.max(1, Math.min(99, pos));
+    positionRef.current = clamped;
+
+    if (beforeLayerRef.current) {
+      beforeLayerRef.current.style.clipPath = `inset(0 ${100 - clamped}% 0 0)`;
+    }
+    if (trackRef.current) {
+      trackRef.current.style.transform = `translate3d(${clamped}%, 0, 0)`;
+    }
+    if (containerRef.current) {
+      containerRef.current.setAttribute('aria-valuenow', String(Math.round(clamped)));
+    }
   }, []);
 
-  const handleTouchMove = (e: React.TouchEvent) => {
-    handleMove(e.touches[0].clientX);
+  const updateFromClientX = useCallback(
+    (clientX: number) => {
+      const container = containerRef.current;
+      if (!container) return;
+
+      const rect = rectRef.current || container.getBoundingClientRect();
+      rectRef.current = rect;
+      if (rect.width <= 0) return;
+
+      const pct = ((clientX - rect.left) / rect.width) * 100;
+      applyPosition(pct);
+    },
+    [applyPosition]
+  );
+
+  const scheduleUpdate = useCallback(
+    (clientX: number) => {
+      pendingClientXRef.current = clientX;
+      if (rafIdRef.current !== null) return;
+
+      rafIdRef.current = window.requestAnimationFrame(() => {
+        rafIdRef.current = null;
+        if (pendingClientXRef.current !== null) {
+          updateFromClientX(pendingClientXRef.current);
+        }
+      });
+    },
+    [updateFromClientX]
+  );
+
+  useEffect(() => {
+    applyPosition(50);
+
+    const handleResize = () => {
+      rectRef.current = null;
+    };
+    window.addEventListener('resize', handleResize, { passive: true });
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      if (rafIdRef.current !== null) {
+        window.cancelAnimationFrame(rafIdRef.current);
+      }
+    };
+  }, [applyPosition]);
+
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+
+    const container = containerRef.current;
+    if (!container) return;
+
+    rectRef.current = container.getBoundingClientRect();
+    isDraggingRef.current = true;
+    setIsDragging(true);
+
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch {
+      // Ignore if pointer capture is unavailable
+    }
+
+    updateFromClientX(e.clientX);
   };
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging && e.buttons !== 1) return;
-    handleMove(e.clientX);
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDraggingRef.current) return;
+    scheduleUpdate(e.clientX);
+  };
+
+  const stopDragging = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDraggingRef.current) return;
+    isDraggingRef.current = false;
+    setIsDragging(false);
+
+    if (rafIdRef.current !== null) {
+      window.cancelAnimationFrame(rafIdRef.current);
+      rafIdRef.current = null;
+    }
+    if (pendingClientXRef.current !== null) {
+      updateFromClientX(pendingClientXRef.current);
+      pendingClientXRef.current = null;
+    }
+
+    try {
+      if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+        e.currentTarget.releasePointerCapture(e.pointerId);
+      }
+    } catch {
+      // Ignore
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      applyPosition(positionRef.current - 3);
+    } else if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      applyPosition(positionRef.current + 3);
+    }
   };
 
   return (
     <div
       ref={containerRef}
-      onMouseDown={() => setIsDragging(true)}
-      onMouseUp={() => setIsDragging(false)}
-      onMouseLeave={() => setIsDragging(false)}
-      onMouseMove={handleMouseMove}
-      onTouchMove={handleTouchMove}
-      className={`relative w-full aspect-16/9 sm:aspect-16/10 rounded-2xl overflow-hidden select-none cursor-ew-resize border shadow-2xl ${
+      role="slider"
+      tabIndex={0}
+      aria-label="So sánh trước và sau"
+      aria-valuemin={1}
+      aria-valuemax={99}
+      aria-valuenow={50}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={stopDragging}
+      onPointerCancel={stopDragging}
+      onKeyDown={handleKeyDown}
+      onDragStart={(e) => e.preventDefault()}
+      className={`relative w-full aspect-16/9 sm:aspect-16/10 rounded-2xl overflow-hidden select-none touch-none cursor-ew-resize border shadow-2xl outline-none focus-visible:ring-2 focus-visible:ring-[#D9C9A3] ${
         className.includes('border-') ? '' : 'border-[#302839]'
       } ${className.includes('bg-') ? '' : 'bg-black'} ${className}`}
     >
@@ -54,20 +168,24 @@ export const BeforeAfterSlider: React.FC<BeforeAfterSliderProps> = ({
       <img
         src={afterImage}
         alt="After AI Render"
-        className="absolute inset-0 w-full h-full object-cover"
+        draggable={false}
+        decoding="async"
+        className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none"
         referrerPolicy="no-referrer"
       />
 
-      {/* Before image (clipped by sliderPosition) */}
+      {/* Before image (GPU-clipped with clip-path, zero layout reflow) */}
       <div
-        className="absolute inset-0 overflow-hidden"
-        style={{ width: `${sliderPosition}%` }}
+        ref={beforeLayerRef}
+        className="absolute inset-0 pointer-events-none will-change-[clip-path]"
+        style={{ clipPath: 'inset(0 50% 0 0)' }}
       >
         <img
           src={beforeImage}
           alt="Before Original"
-          className="absolute inset-0 w-full h-full object-cover max-w-none"
-          style={{ width: containerRef.current ? `${containerRef.current.clientWidth}px` : '100%' }}
+          draggable={false}
+          decoding="async"
+          className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none"
           referrerPolicy="no-referrer"
         />
         <div className="absolute top-4 left-4 z-10 px-2.5 py-1 rounded-md bg-black/75 backdrop-blur-md text-white text-[11px] font-bold tracking-wide uppercase border border-white/20">
@@ -76,19 +194,24 @@ export const BeforeAfterSlider: React.FC<BeforeAfterSliderProps> = ({
       </div>
 
       {/* After Label */}
-      <div className="absolute top-4 right-4 z-10 px-2.5 py-1 rounded-md bg-purple-950/80 backdrop-blur-md text-purple-200 text-[11px] font-bold tracking-wide uppercase border border-purple-500/40">
+      <div className="absolute top-4 right-4 z-10 px-2.5 py-1 rounded-md bg-[#0E1726]/85 backdrop-blur-md text-[#F1ECE2] text-[11px] font-bold tracking-wide uppercase border border-[#D9C9A3]/35 pointer-events-none">
         {afterLabel}
       </div>
 
-      {/* Vertical divider line */}
+      {/* GPU-translated vertical divider & handle track */}
       <div
-        className="absolute top-0 bottom-0 w-0.5 bg-white shadow-[0_0_12px_rgba(255,255,255,0.8)] z-20 pointer-events-none"
-        style={{ left: `${sliderPosition}%` }}
+        ref={trackRef}
+        className="absolute inset-0 pointer-events-none z-20 will-change-transform"
+        style={{ transform: 'translate3d(50%, 0, 0)' }}
       >
-        {/* Center circular handle */}
-        <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-white shadow-xl flex items-center justify-center text-slate-800 font-bold text-xs">
+        <div className="absolute top-0 bottom-0 left-0 -translate-x-1/2 w-[2px] bg-white/95 shadow-[0_0_12px_rgba(0,0,0,0.45)]" />
+        <div
+          className={`absolute top-1/2 left-0 -translate-y-1/2 -translate-x-1/2 w-9 h-9 rounded-full bg-white shadow-[0_4px_16px_rgba(0,0,0,0.35)] border border-[#D9C9A3]/60 flex items-center justify-center text-[#0E1726] transition-transform duration-150 ${
+            isDragging ? 'scale-110 ring-4 ring-[#D9C9A3]/35' : 'scale-100'
+          }`}
+        >
           <svg
-            className="w-4 h-4 text-purple-700"
+            className="w-4 h-4 text-[#0E1726]"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
