@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @layer base {
   :root {
     /* ═══ DEEP NAVY + IVORY PALETTE ═══ */
@@ -93,11 +95,11 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(217, 201, 163, 0.25);
+  background: rgba(217, 201, 163, 0.28);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(217, 201, 163, 0.45);
+  background: rgba(217, 201, 163, 0.5);
 }
 
 /* Keyframes */
@@ -106,8 +108,26 @@
   50% { opacity: 0.4; }
 }
 
+@keyframes shimmerSweep {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
 .animate-subtle-pulse {
   animation: subtlePulse 3s ease infinite;
+}
+
+.skeleton-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.skeleton-shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(217, 201, 163, 0.22), transparent);
+  animation: shimmerSweep 1.5s infinite;
 }
 
 /* Ivory Gradients & Buttons */

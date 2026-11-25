@@ -1,24 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '../../context/AppContext';
-import { MainToolType, ExtendedToolType } from '../../types';
-import {
-  Home,
-  Sparkles,
-  Layers,
-  RefreshCw,
-  Eye,
-  Edit3,
-  ChevronDown,
-  History,
-  X,
-  Wand2,
-  Sliders,
-  Type,
-  Maximize2,
-  FileText,
-  Search,
-  CheckCircle,
-} from 'lucide-react';
+import { MainToolType } from '../../types';
 
 export const NavigationBar: React.FC = () => {
   const {
@@ -31,40 +13,57 @@ export const NavigationBar: React.FC = () => {
     setActiveExtendedTool,
     isMobileMenuOpen,
     setIsMobileMenuOpen,
-    theme,
   } = useApp();
 
-  const isLight = theme === 'light';
-
   const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
+  const lastScrollYRef = useRef(0);
   const [isExtendedDropdownOpen, setIsExtendedDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
       if (currentScrollY > 100) {
-        if (currentScrollY > lastScrollY && currentScrollY - lastScrollY > 8) {
-          setIsVisible(false); // scroll down -> hide
-        } else if (lastScrollY - currentScrollY > 8) {
-          setIsVisible(true); // scroll up -> show
+        if (currentScrollY > lastScrollYRef.current && currentScrollY - lastScrollYRef.current > 8) {
+          setIsVisible(false);
+        } else if (lastScrollYRef.current - currentScrollY > 8) {
+          setIsVisible(true);
         }
       } else {
         setIsVisible(true);
       }
-      setLastScrollY(currentScrollY);
+      lastScrollYRef.current = currentScrollY;
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScrollY]);
+  }, []);
 
-  const mainTools: { id: MainToolType; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
-    { id: 'render', label: t('navRender'), icon: Sparkles },
-    { id: 'floorplan', label: t('navFloorPlan'), icon: Layers },
-    { id: 'renovation', label: t('navRenovation'), icon: RefreshCw },
-    { id: 'viewsync', label: t('navViewSync'), icon: Eye },
-    { id: 'editor', label: t('navEditor'), icon: Edit3 },
+  useEffect(() => {
+    const handleOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsExtendedDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleOutside);
+    return () => document.removeEventListener('mousedown', handleOutside);
+  }, []);
+
+  const mainTools: { id: MainToolType; label: string; icon: string }[] = [
+    { id: 'render', label: t('navRender'), icon: 'auto_awesome' },
+    { id: 'floorplan', label: t('navFloorPlan'), icon: 'layers' },
+    { id: 'renovation', label: t('navRenovation'), icon: 'autorenew' },
+    { id: 'viewsync', label: t('navViewSync'), icon: 'visibility' },
+    { id: 'editor', label: t('navEditor'), icon: 'edit' },
+  ];
+
+  const extendedMenuItems = [
+    { id: 'rerender' as const, label: 'ReRender Phối Cảnh', icon: 'refresh' },
+    { id: 'text-to-image' as const, label: 'Text to Image (Prompt)', icon: 'text_fields' },
+    { id: 'image-to-image' as const, label: 'Image to Image Render', icon: 'layers' },
+    { id: 'upscale' as const, label: 'Upscale 4K Siêu Nét', icon: 'zoom_in' },
+    { id: 'relighting' as const, label: 'Thay Đổi Ánh Sáng', icon: 'wb_sunny' },
+    { id: 'inpaint' as const, label: 'Inpainting Thay Đổi Vật Thể', icon: 'brush' },
   ];
 
   const handleToolSelect = (toolId: MainToolType) => {
@@ -79,233 +78,137 @@ export const NavigationBar: React.FC = () => {
   return (
     <>
       <div
-        className={`fixed top-[64px] left-0 right-0 z-30 h-[48px] backdrop-blur-xl border-b transition-all duration-300 ${
-          isLight
-            ? 'bg-[#FDFBF7]/95 border-[#E2D9C8] text-[#121D30]'
-            : 'bg-[#0E1726]/95 border-[#24304A] text-[#F1ECE2]'
-        } ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}
+        className={`fixed top-[64px] left-0 right-0 z-30 h-[52px] transition-transform duration-300 pointer-events-none ${
+          isVisible ? 'translate-y-0' : '-translate-y-[120%]'
+        }`}
       >
-        <div className="max-w-[1200px] mx-auto h-full px-4 sm:px-6 flex items-center justify-between">
-          {/* Left: Home Button */}
+        <div className="max-w-[1920px] mx-auto h-full px-4 sm:px-6 flex items-center justify-between">
+          {/* Left: Circular Home Button */}
           <button
             onClick={() => setActiveRoute('/')}
-            className={`w-8 h-8 rounded-full flex items-center justify-center border transition-all cursor-pointer shadow-xs ${
-              isLight
-                ? 'text-[#57657E] hover:text-[#121D30] bg-[#F0EAE0] hover:bg-[#E5DDCB] border-[#E2D9C8]'
-                : 'text-[#9AA3B5] hover:text-[#F1ECE2] bg-[#121D30] hover:bg-[#1C2944] border-[#24304A]'
-            }`}
+            className="pointer-events-auto w-9 h-9 rounded-full flex items-center justify-center backdrop-blur-md border transition-all cursor-pointer shadow-sm bg-[#FFFFFF]/90 dark:bg-[#121D30]/90 hover:bg-[#F0EAE0] dark:hover:bg-[#1C2944] border-[#E2D9C8] dark:border-[#24304A] text-[#57657E] dark:text-[#9AA3B5] hover:text-[#121D30] dark:hover:text-[#F1ECE2]"
             title="Về Trang Chủ"
             aria-label="Home"
           >
-            <Home className="w-4 h-4" />
+            <span className="material-symbols-outlined text-[19px]">home</span>
           </button>
 
-          {/* Center: Main Pill Navigation Container */}
-          <div
-            className={`hidden sm:flex items-center gap-1 p-1 rounded-full border shadow-inner ${
-              isLight
-                ? 'bg-[#F0EAE0] border-[#E2D9C8]'
-                : 'bg-[#121D30] border-[#24304A]'
-            }`}
-          >
+          {/* Center: Floating Pill Navigation Container */}
+          <div className="pointer-events-auto hidden sm:flex items-center gap-0.5 p-1 rounded-full backdrop-blur-md border shadow-md bg-[#FFFFFF]/90 dark:bg-[#121D30]/90 border-[#E2D9C8] dark:border-[#24304A]">
             {mainTools.map((tool, idx) => {
-              const Icon = tool.icon;
               const isActive = activeMainTool === tool.id && !activeExtendedTool && activeRoute === '/image';
               return (
                 <React.Fragment key={tool.id}>
                   {idx > 0 && (
-                    <span
-                      className={`w-px h-3.5 my-auto mx-0.5 ${
-                        isLight ? 'bg-[#E2D9C8]' : 'bg-[#24304A]'
-                      }`}
-                    />
+                    <span className="w-px h-3.5 my-auto mx-0.5 bg-[#E2D9C8] dark:bg-[#24304A]" />
                   )}
                   <button
                     onClick={() => handleToolSelect(tool.id)}
-                    className={`flex items-center gap-1.5 px-3.5 py-1 text-xs transition-all duration-200 cursor-pointer ${
+                    className={`flex items-center gap-1.5 px-3.5 py-1.5 text-xs rounded-full transition-all duration-200 cursor-pointer whitespace-nowrap shrink-0 ${
                       isActive
-                        ? 'bg-[#D9C9A3] text-[#0E1726] font-bold rounded-full shadow-sm'
-                        : isLight
-                        ? 'text-[#57657E] hover:text-[#121D30] rounded-full hover:bg-[#E5DDCB]'
-                        : 'text-[#9AA3B5] hover:text-[#F1ECE2] rounded-full hover:bg-[#1C2944]'
+                        ? 'bg-gradient-to-r from-[#D9C9A3] to-[#EDE2C8] text-[#0E1726] font-bold shadow-xs'
+                        : 'text-[#57657E] dark:text-[#9AA3B5] hover:text-[#121D30] dark:hover:text-[#F1ECE2] hover:bg-[#F0EAE0] dark:hover:bg-[#1C2944] font-medium'
                     }`}
                   >
-                    <Icon className="w-3.5 h-3.5" />
-                    <span className="hidden md:inline whitespace-nowrap">{tool.label}</span>
+                    <span className="material-symbols-outlined text-[16px]">{tool.icon}</span>
+                    <span className="hidden md:inline">{tool.label}</span>
                   </button>
                 </React.Fragment>
               );
             })}
 
-            {/* Separator before Extended Dropdown */}
-            <span
-              className={`w-px h-3.5 my-auto mx-0.5 ${
-                isLight ? 'bg-[#E2D9C8]' : 'bg-[#24304A]'
-              }`}
-            />
+            <span className="w-px h-3.5 my-auto mx-0.5 bg-[#E2D9C8] dark:bg-[#24304A]" />
 
-            {/* Mở rộng Dropdown Button */}
-            <div className="relative">
+            {/* Extended Tools Dropdown */}
+            <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setIsExtendedDropdownOpen(!isExtendedDropdownOpen)}
-                className={`flex items-center gap-1 px-3 py-1 text-xs rounded-full transition-all cursor-pointer ${
+                className={`flex items-center gap-1 px-3.5 py-1.5 text-xs rounded-full transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                   activeExtendedTool
-                    ? 'bg-[#D9C9A3] text-[#0E1726] font-bold shadow-sm'
-                    : isLight
-                    ? 'text-[#57657E] hover:text-[#121D30] hover:bg-[#E5DDCB]'
-                    : 'text-[#9AA3B5] hover:text-[#F1ECE2] hover:bg-[#1C2944]'
+                    ? 'bg-gradient-to-r from-[#D9C9A3] to-[#EDE2C8] text-[#0E1726] font-bold shadow-xs'
+                    : 'text-[#57657E] dark:text-[#9AA3B5] hover:text-[#121D30] dark:hover:text-[#F1ECE2] hover:bg-[#F0EAE0] dark:hover:bg-[#1C2944] font-medium'
                 }`}
               >
-                <span>{activeExtendedTool ? `Mở rộng: ${activeExtendedTool}` : t('navExtended')}</span>
-                <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isExtendedDropdownOpen ? 'rotate-180' : ''}`} />
-              </button>
-
-              {/* Extended Tools Menu Dropdown */}
-              {isExtendedDropdownOpen && (
-                <div
-                  className={`absolute left-1/2 -translate-x-1/2 mt-2 w-72 border rounded-2xl shadow-2xl p-2 z-50 ${
-                    isLight
-                      ? 'bg-[#FFFFFF] border-[#E2D9C8] text-[#121D30]'
-                      : 'bg-[#121D30] border-[#24304A] text-[#F1ECE2]'
+                <span>{t('navExtended')}</span>
+                <span
+                  className={`material-symbols-outlined text-[16px] transition-transform ${
+                    isExtendedDropdownOpen ? 'rotate-180' : ''
                   }`}
                 >
-                  <div
-                    className={`px-3 py-1.5 border-b mb-1 ${
-                      isLight ? 'border-[#E2D9C8]' : 'border-[#24304A]'
-                    }`}
-                  >
-                    <p className="text-[11px] font-bold uppercase tracking-wider text-[#DDCDA8]">
-                      Công cụ mở rộng AI (13 công cụ)
+                  expand_more
+                </span>
+              </button>
+
+              {isExtendedDropdownOpen && (
+                <div className="absolute left-1/2 -translate-x-1/2 mt-2 w-64 border rounded-2xl shadow-2xl p-2 z-50 bg-[#FFFFFF] dark:bg-[#121D30] border-[#E2D9C8] dark:border-[#24304A] text-[#121D30] dark:text-[#F1ECE2]">
+                  <div className="px-3 py-1.5 border-b border-[#E2D9C8] dark:border-[#24304A] mb-1">
+                    <p className="text-[11px] font-bold text-[#8E733D] dark:text-[#DDCDA8]">
+                      Công cụ mở rộng AI
                     </p>
                   </div>
-                  <div className="max-h-80 overflow-y-auto space-y-0.5">
-                    <button
-                      onClick={() => {
-                        setActiveRoute('/image');
-                        setActiveExtendedTool('rerender');
-                        setIsExtendedDropdownOpen(false);
-                      }}
-                      className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-left rounded-lg hover:bg-[#1C2944] text-[#F1ECE2] cursor-pointer"
-                    >
-                      <RefreshCw className="w-3.5 h-3.5 text-[#DDCDA8]" />
-                      <span>ReRender Phối Cảnh</span>
-                    </button>
-                    <button
-                      onClick={() => {
-                        setActiveRoute('/image');
-                        setActiveExtendedTool('watermark-cleanup');
-                        setIsExtendedDropdownOpen(false);
-                      }}
-                      className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-left rounded-lg hover:bg-[#1C2944] text-[#F1ECE2] cursor-pointer"
-                    >
-                      <Sparkles className="w-3.5 h-3.5 text-[#DDCDA8]" />
-                      <span>Watermark Cleanup</span>
-                    </button>
-                    <button
-                      onClick={() => {
-                        setActiveRoute('/image');
-                        setActiveExtendedTool('text-to-image');
-                        setIsExtendedDropdownOpen(false);
-                      }}
-                      className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-left rounded-lg hover:bg-[#1C2944] text-[#F1ECE2] cursor-pointer"
-                    >
-                      <Type className="w-3.5 h-3.5 text-[#DDCDA8]" />
-                      <span>Text to Image (Prompt)</span>
-                    </button>
-                    <button
-                      onClick={() => {
-                        setActiveRoute('/image');
-                        setActiveExtendedTool('image-to-image');
-                        setIsExtendedDropdownOpen(false);
-                      }}
-                      className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-left rounded-lg hover:bg-[#1C2944] text-[#F1ECE2] cursor-pointer"
-                    >
-                      <Layers className="w-3.5 h-3.5 text-[#DDCDA8]" />
-                      <span>Image to Image Render</span>
-                    </button>
-                    <button
-                      onClick={() => {
-                        setActiveRoute('/image');
-                        setActiveExtendedTool('upscale');
-                        setIsExtendedDropdownOpen(false);
-                      }}
-                      className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-left rounded-lg hover:bg-[#1C2944] text-[#F1ECE2] cursor-pointer"
-                    >
-                      <Maximize2 className="w-3.5 h-3.5 text-[#DDCDA8]" />
-                      <span>Upscale 4K Siêu Nét</span>
-                    </button>
-                    <button
-                      onClick={() => {
-                        setActiveRoute('/image');
-                        setActiveExtendedTool('relighting');
-                        setIsExtendedDropdownOpen(false);
-                      }}
-                      className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-left rounded-lg hover:bg-[#1C2944] text-[#F1ECE2] cursor-pointer"
-                    >
-                      <Sliders className="w-3.5 h-3.5 text-[#DDCDA8]" />
-                      <span>Thay Đổi Ánh Sáng</span>
-                    </button>
-                    <button
-                      onClick={() => {
-                        setActiveRoute('/image');
-                        setActiveExtendedTool('inpaint');
-                        setIsExtendedDropdownOpen(false);
-                      }}
-                      className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-left rounded-lg hover:bg-[#1C2944] text-[#F1ECE2] cursor-pointer"
-                    >
-                      <Wand2 className="w-3.5 h-3.5 text-[#DDCDA8]" />
-                      <span>Inpainting Thay Đổi Vật Thể</span>
-                    </button>
+                  <div className="max-h-72 overflow-y-auto space-y-0.5">
+                    {extendedMenuItems.map((ext) => (
+                      <button
+                        key={ext.id}
+                        onClick={() => {
+                          setActiveRoute('/image');
+                          setActiveExtendedTool(ext.id);
+                          setIsExtendedDropdownOpen(false);
+                        }}
+                        className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-left rounded-xl hover:bg-[#F0EAE0] dark:hover:bg-[#1C2944] transition-colors cursor-pointer"
+                      >
+                        <span className="material-symbols-outlined text-[16px] text-[#8E733D] dark:text-[#DDCDA8]">
+                          {ext.icon}
+                        </span>
+                        <span>{ext.label}</span>
+                      </button>
+                    ))}
                   </div>
                 </div>
               )}
             </div>
           </div>
 
-          {/* Right: History Gallery Button */}
+          {/* Right: Pill History */}
           <button
             onClick={() => setActiveRoute('/history')}
-            className={`flex items-center gap-1.5 px-3 py-1 text-xs rounded-full border transition-all cursor-pointer ${
+            className={`pointer-events-auto flex items-center gap-1.5 px-3.5 py-1.5 text-xs rounded-full backdrop-blur-md border transition-all cursor-pointer shadow-sm whitespace-nowrap shrink-0 ${
               activeRoute === '/history'
-                ? 'bg-[#D9C9A3] text-[#0E1726] font-bold border-[#D9C9A3]'
-                : isLight
-                ? 'text-[#57657E] hover:text-[#121D30] bg-[#F0EAE0] hover:bg-[#E5DDCB] border-[#E2D9C8]'
-                : 'text-[#9AA3B5] hover:text-[#F1ECE2] bg-[#121D30] hover:bg-[#1C2944] border-[#24304A]'
+                ? 'bg-gradient-to-r from-[#D9C9A3] to-[#EDE2C8] text-[#0E1726] font-bold border-[#D9C9A3]'
+                : 'bg-[#FFFFFF]/90 dark:bg-[#121D30]/90 hover:bg-[#F0EAE0] dark:hover:bg-[#1C2944] border-[#E2D9C8] dark:border-[#24304A] text-[#57657E] dark:text-[#9AA3B5] hover:text-[#121D30] dark:hover:text-[#F1ECE2] font-medium'
             }`}
             title="Lịch Sử Tạo Ảnh"
           >
-            <History className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline font-medium">{t('navHistory')}</span>
+            <span className="material-symbols-outlined text-[16px]">history</span>
+            <span className="hidden sm:inline">{t('navHistory')}</span>
           </button>
         </div>
       </div>
 
-      {/* Mobile Tools Drawer (when hamburger clicked) */}
+      {/* Mobile Tools Drawer */}
       {isMobileMenuOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex flex-col justify-end">
-          <div className="bg-[#121D30] border-t border-[#24304A] rounded-t-3xl p-6 max-h-[85vh] overflow-y-auto space-y-6">
-            <div className="flex items-center justify-between pb-3 border-b border-[#24304A]">
+        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex flex-col justify-end">
+          <div className="bg-[#FFFFFF] dark:bg-[#121D30] border-t border-[#E2D9C8] dark:border-[#24304A] rounded-t-3xl p-6 max-h-[85vh] overflow-y-auto space-y-6 text-[#121D30] dark:text-[#F1ECE2]">
+            <div className="flex items-center justify-between pb-3 border-b border-[#E2D9C8] dark:border-[#24304A]">
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded bg-[#D9C9A3] flex items-center justify-center text-[#0E1726] font-bold text-xs">
+                <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#D9C9A3] to-[#EDE2C8] flex items-center justify-center text-[#0E1726] font-bold text-xs">
                   A
                 </div>
-                <h3 className="text-base font-bold text-[#F1ECE2]">Công Cụ AchiPics</h3>
+                <h3 className="text-base font-bold">Công Cụ AchiPics</h3>
               </div>
               <button
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="p-1 rounded-full text-[#9AA3B5] hover:text-[#F1ECE2] hover:bg-[#1C2944]"
+                className="p-1.5 rounded-full text-[#57657E] dark:text-[#9AA3B5] hover:bg-[#F0EAE0] dark:hover:bg-[#1C2944]"
               >
-                <X className="w-5 h-5" />
+                <span className="material-symbols-outlined text-[20px]">close</span>
               </button>
             </div>
 
-            {/* Main tools */}
             <div className="space-y-1">
-              <p className="text-[11px] font-bold uppercase tracking-wider text-[#DDCDA8] px-2 mb-2">
+              <p className="text-[11px] font-bold text-[#8E733D] dark:text-[#DDCDA8] px-2 mb-2">
                 Công cụ chính
               </p>
               {mainTools.map((tool) => {
-                const Icon = tool.icon;
                 const isActive = activeMainTool === tool.id && !activeExtendedTool && activeRoute === '/image';
                 return (
                   <button
@@ -316,30 +219,33 @@ export const NavigationBar: React.FC = () => {
                     }}
                     className={`w-full flex items-center justify-between p-3 rounded-xl text-sm font-medium transition-all ${
                       isActive
-                        ? 'bg-[#D9C9A3] text-[#0E1726] font-bold shadow-md'
-                        : 'text-[#9AA3B5] hover:bg-[#16213A] hover:text-[#F1ECE2]'
+                        ? 'bg-gradient-to-r from-[#D9C9A3] to-[#EDE2C8] text-[#0E1726] font-bold shadow-sm'
+                        : 'text-[#57657E] dark:text-[#9AA3B5] hover:bg-[#F0EAE0] dark:hover:bg-[#16213A]'
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <Icon className="w-4 h-4" />
+                      <span className="material-symbols-outlined text-[18px]">{tool.icon}</span>
                       <span>{tool.label}</span>
                     </div>
-                    {isActive && <CheckCircle className="w-4 h-4" />}
+                    {isActive && (
+                      <span className="material-symbols-outlined text-[18px]">check_circle</span>
+                    )}
                   </button>
                 );
               })}
             </div>
 
-            {/* Quick links */}
-            <div className="pt-3 border-t border-[#24304A] space-y-2">
+            <div className="pt-3 border-t border-[#E2D9C8] dark:border-[#24304A] space-y-2">
               <button
                 onClick={() => {
                   setActiveRoute('/history');
                   setIsMobileMenuOpen(false);
                 }}
-                className="w-full flex items-center gap-3 p-3 rounded-xl bg-[#16213A] text-[#F1ECE2] text-sm font-medium"
+                className="w-full flex items-center gap-3 p-3 rounded-xl bg-[#F0EAE0] dark:bg-[#16213A] text-sm font-medium"
               >
-                <History className="w-4 h-4 text-[#DDCDA8]" />
+                <span className="material-symbols-outlined text-[18px] text-[#8E733D] dark:text-[#DDCDA8]">
+                  history
+                </span>
                 <span>{t('navHistory')}</span>
               </button>
               <button
@@ -347,9 +253,11 @@ export const NavigationBar: React.FC = () => {
                   setActiveRoute('/pricing');
                   setIsMobileMenuOpen(false);
                 }}
-                className="w-full flex items-center gap-3 p-3 rounded-xl bg-[#16213A] text-[#F1ECE2] text-sm font-medium"
+                className="w-full flex items-center gap-3 p-3 rounded-xl bg-[#F0EAE0] dark:bg-[#16213A] text-sm font-medium"
               >
-                <Sparkles className="w-4 h-4 text-[#DDCDA8]" />
+                <span className="material-symbols-outlined text-[18px] text-[#8E733D] dark:text-[#DDCDA8]">
+                  payments
+                </span>
                 <span>{t('navPricing')}</span>
               </button>
             </div>

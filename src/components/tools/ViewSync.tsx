@@ -1,217 +1,169 @@
-import React, { useState } from 'react';
-import { useApp } from '../../context/AppContext';
+import React from 'react';
 import { ARCH_ASSETS } from '../../data/mockAssets';
-import {
-  Eye,
-  Camera,
-  Upload,
-  Sparkles,
-  Download,
-  RefreshCw,
-  Sliders,
-  Layers,
-} from 'lucide-react';
+import { StudioWorkspace } from './StudioWorkspace';
+
+import modeArchImg from '../../assets/images/mode_architecture_1794987577559.jpg';
+import modeInteriorImg from '../../assets/images/mode_interior_1794987578425.jpg';
+import modeUrbanImg from '../../assets/images/mode_urban_1794987578552.jpg';
+import renoFacadeImg from '../../assets/images/renovation_facade_1794989362282.jpg';
 
 export const ViewSync: React.FC = () => {
-  const { deductCredits, addHistoryItem } = useApp();
-
-  const [mode, setMode] = useState<'sync' | 'creative' | 'batch'>('sync');
-  const [sourceAngle, setSourceAngle] = useState('Góc chính diện (Front View)');
-  const [targetAngle, setTargetAngle] = useState('Góc 45 độ từ bên hông (Side 45°)');
-  const [uploadedBase, setUploadedBase] = useState<string | null>(ARCH_ASSETS.heroVilla);
-  const [isGenerating, setIsGenerating] = useState(false);
-
-  const [syncedViews, setSyncedViews] = useState<{ angle: string; image: string }[]>([
-    { angle: 'Góc Chính Diện (Front)', image: ARCH_ASSETS.heroVilla },
-    { angle: 'Góc Nghiêng 45° Bên Phải', image: ARCH_ASSETS.heroInterior },
-    { angle: 'Góc Nhìn Từ Trên Cao (Bird Eye)', image: ARCH_ASSETS.landscapeUrban },
-    { angle: 'Phối Cảnh Ban Đêm Có Đèn', image: ARCH_ASSETS.renovationAfter },
-  ]);
-
-  const handleGenerate = () => {
-    if (!deductCredits(50)) {
-      alert('Không đủ Credits. Vui lòng nạp thêm!');
-      return;
-    }
-    setIsGenerating(true);
-    setTimeout(() => {
-      setIsGenerating(false);
-      addHistoryItem({
-        id: `vs-${Date.now()}`,
-        tool: 'ViewSync',
-        prompt: `Đồng bộ góc nhìn ${sourceAngle} sang ${targetAngle}`,
-        resultImage: syncedViews[0].image,
-        createdAt: new Date().toLocaleString(),
-        isFavorite: false,
-        aspectRatio: '16:9',
-        cost: 50,
-      });
-    }, 2200);
-  };
-
   return (
-    <div className="h-[calc(100vh-112px)] overflow-hidden flex flex-col lg:flex-row bg-[#0E1726]">
-      {/* LEFT PANEL */}
-      <div className="w-full lg:w-[460px] h-full overflow-y-auto border-r border-[#24304A] bg-[#121D30] p-5 space-y-6 shrink-0">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <Camera className="w-4 h-4 text-[#DDCDA8]" />
-            <h2 className="text-base font-bold text-[#F1ECE2]">
-              ViewSync — Đồng Bộ Đa Góc Nhìn
-            </h2>
-          </div>
-          <p className="text-xs text-[#9AA3B5]">
-            Giữ nguyên 100% hình khối kiến trúc và vật liệu khi xoay camera sang các góc nhìn khác nhau
-          </p>
-        </div>
-
-        {/* 3 Modes: Sync / Creative / Batch */}
-        <div className="grid grid-cols-3 gap-1 p-1 rounded-xl bg-[#111B2D] border border-[#24304A]">
-          <button
-            onClick={() => setMode('sync')}
-            className={`py-2 text-xs font-bold rounded-lg transition-all cursor-pointer ${
-              mode === 'sync' ? 'bg-[#D9C9A3] text-[#0E1726] shadow-xs' : 'text-[#9AA3B5] hover:text-[#F1ECE2]'
-            }`}
-          >
-            Đồng bộ (Sync)
-          </button>
-          <button
-            onClick={() => setMode('creative')}
-            className={`py-2 text-xs font-bold rounded-lg transition-all cursor-pointer ${
-              mode === 'creative' ? 'bg-[#D9C9A3] text-[#0E1726] shadow-xs' : 'text-[#9AA3B5] hover:text-[#F1ECE2]'
-            }`}
-          >
-            Sáng tạo góc
-          </button>
-          <button
-            onClick={() => setMode('batch')}
-            className={`py-2 text-xs font-bold rounded-lg transition-all cursor-pointer ${
-              mode === 'batch' ? 'bg-[#D9C9A3] text-[#0E1726] shadow-xs' : 'text-[#9AA3B5] hover:text-[#F1ECE2]'
-            }`}
-          >
-            Batch 4 góc
-          </button>
-        </div>
-
-        {/* Base Image */}
-        <div>
-          <label className="text-xs font-bold text-[#F1ECE2] block mb-2">
-            Ảnh kiến trúc chuẩn (Góc neo giữ)
-          </label>
-          <div className="relative rounded-xl overflow-hidden border border-[#D9C9A3]/40 aspect-video bg-[#111B2D]">
-            <img src={uploadedBase || ARCH_ASSETS.heroVilla} alt="Base View" className="w-full h-full object-cover" />
-            <span className="absolute top-2 left-2 px-2 py-0.5 rounded bg-black/80 text-white text-[10px]">
-              Góc chuẩn gốc
-            </span>
-          </div>
-        </div>
-
-        {/* Angle Selectors */}
-        <div className="space-y-4 pt-2 border-t border-[#24304A]">
-          <div>
-            <label className="text-xs font-semibold text-[#9AA3B5] block mb-1.5">
-              Góc máy nguồn hiện tại
-            </label>
-            <select
-              value={sourceAngle}
-              onChange={(e) => setSourceAngle(e.target.value)}
-              className="w-full text-xs bg-[#111B2D] border border-[#24304A] rounded-xl px-3 py-2 text-[#F1ECE2] focus:outline-none focus:border-[#D9C9A3] cursor-pointer"
-            >
-              <option value="Góc chính diện (Front View)">Góc chính diện (Front View)</option>
-              <option value="Góc nghiêng 45 độ bên trái (Left 45°)">Góc nghiêng 45° bên trái</option>
-              <option value="Góc nghiêng 45 độ bên phải (Right 45°)">Góc nghiêng 45° bên phải</option>
-              <option value="Góc mắt chim từ trên cao (Bird Eye View)">Góc mắt chim từ trên cao (Bird Eye View)</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="text-xs font-semibold text-[#9AA3B5] block mb-1.5">
-              Góc máy đích muốn AI sinh ra
-            </label>
-            <select
-              value={targetAngle}
-              onChange={(e) => setTargetAngle(e.target.value)}
-              className="w-full text-xs bg-[#111B2D] border border-[#24304A] rounded-xl px-3 py-2 text-[#F1ECE2] focus:outline-none focus:border-[#D9C9A3] cursor-pointer"
-            >
-              <option value="Góc 45 độ từ bên hông (Side 45°)">Góc 45° từ bên hông (Side 45°)</option>
-              <option value="Góc cận cảnh chi tiết sảnh vào">Góc cận cảnh chi tiết sảnh vào (Close-up)</option>
-              <option value="Góc ngước từ dưới sân lên (Worm Eye)">Góc ngước từ dưới sân lên (Worm Eye)</option>
-              <option value="Phối cảnh ban đêm thắp đèn nội thất">Phối cảnh ban đêm thắp đèn nội thất</option>
-            </select>
-          </div>
-        </div>
-
-        {/* Generate Button */}
-        <div className="pt-2">
-          <div className="flex items-center justify-between text-xs mb-2">
-            <span className="text-[#9AA3B5]">Chi phí đồng bộ:</span>
-            <span className="font-extrabold text-[#DDCDA8]">50 Credits</span>
-          </div>
-          <button
-            onClick={handleGenerate}
-            disabled={isGenerating}
-            className={`w-full py-3.5 px-6 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 cursor-pointer ${
-              isGenerating
-                ? 'bg-[#1C2944] text-[#646E84] cursor-not-allowed'
-                : 'bg-[#D9C9A3] hover:bg-[#E4D5B2] text-[#0E1726] shadow-lg shadow-[#D9C9A3]/20 hover:scale-[1.01]'
-            }`}
-          >
-            {isGenerating ? (
-              <>
-                <RefreshCw className="w-4 h-4 animate-spin text-[#0E1726]" />
-                <span>Đang đồng bộ góc nhìn...</span>
-              </>
-            ) : (
-              <>
-                <Sparkles className="w-4 h-4" />
-                <span>Khởi Tạo Góc Nhìn Mới</span>
-              </>
-            )}
-          </button>
-        </div>
-      </div>
-
-      {/* RIGHT DISPLAY */}
-      <div className="flex-1 h-full overflow-y-auto p-4 sm:p-6 flex flex-col justify-between bg-[#0E1726]">
-        <div className="max-w-4xl mx-auto w-full space-y-6">
-          <div className="flex items-center justify-between border-b border-[#24304A] pb-3">
-            <div>
-              <h3 className="text-sm font-bold text-[#F1ECE2]">Bộ Ảnh Đa Góc Nhìn Đồng Bộ Nhất Quán</h3>
-              <p className="text-xs text-[#9AA3B5]">Đảm bảo 100% hình khối kiến trúc không bị biến dạng</p>
-            </div>
-            <button
-              onClick={() => alert('Đã chuẩn bị tệp tải xuống tất cả góc nhìn!')}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#D9C9A3] hover:bg-[#E4D5B2] text-[#0E1726] text-xs font-bold transition-all shadow-md shadow-[#D9C9A3]/20 cursor-pointer"
-            >
-              <Download className="w-3.5 h-3.5" />
-              <span>Tải Toàn Bộ 4K</span>
-            </button>
-          </div>
-
-          {/* Grid of Views */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {syncedViews.map((item, idx) => (
-              <div
-                key={idx}
-                className="relative rounded-2xl overflow-hidden border border-[#24304A] bg-[#121D30] aspect-16/10 shadow-lg group hover:border-[#D9C9A3]/50 transition-colors"
-              >
-                <img src={item.image} alt={item.angle} className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-80" />
-                <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
-                  <span className="text-xs font-bold text-[#F1ECE2]">{item.angle}</span>
-                  <a
-                    href={item.image}
-                    download={`SYNC_VIEW_${idx + 1}.png`}
-                    className="p-1.5 rounded-lg bg-[#D9C9A3] hover:bg-[#E4D5B2] text-[#0E1726] transition-colors"
-                  >
-                    <Download className="w-3.5 h-3.5" />
-                  </a>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
+    <StudioWorkspace
+      toolId="viewsync"
+      toolName="ViewSync Đa Góc Nhìn"
+      dashboardTitle="Chọn chế độ ViewSync AI"
+      dashboardSubtitle="Giữ nguyên 100% hình khối, ngôn ngữ thiết kế và vật liệu công trình khi xoay camera sang các góc nhìn khác nhau"
+      modes={[
+        {
+          id: 'sync',
+          title: 'Đồng bộ Góc máy',
+          desc: 'Xoay camera từ góc chính diện sang góc nghiêng 3/4 hoặc cận cảnh mà giữ nguyên kiến trúc.',
+          icon: 'cameraswitch',
+          image: modeArchImg,
+        },
+        {
+          id: 'creative',
+          title: 'Sáng tạo Góc mới',
+          desc: 'Đề xuất các góc nhìn nghệ thuật tầm mắt người đi hoặc góc ngước ấn tượng.',
+          icon: 'photo_camera',
+          image: renoFacadeImg,
+        },
+        {
+          id: 'batch',
+          title: 'Bộ ảnh Đa góc',
+          desc: 'Tạo đồng loạt nhiều biến thể góc nhìn nhất quán cho hồ sơ thuyết trình dự án.',
+          icon: 'grid_view',
+          image: modeUrbanImg,
+        },
+        {
+          id: 'relight',
+          title: 'Đồng bộ Ngày & Đêm',
+          desc: 'Chuyển đổi cùng một góc phối cảnh qua các khung giờ bình minh, nắng trưa và ban đêm.',
+          icon: 'wb_twilight',
+          image: modeInteriorImg,
+        },
+      ]}
+      uploadTitle="1. Tải ảnh góc neo chuẩn (Anchor)"
+      uploadDragText="Kéo thả ảnh phối cảnh gốc làm góc neo"
+      uploadFormatsText="Ảnh phối cảnh hoàn thiện dùng để khóa vật liệu & hình khối"
+      samples={[
+        { title: 'Biệt thự hồ bơi góc nghiêng', image: modeArchImg },
+        { title: 'Mặt tiền biệt thự phố lúc chạng vạng', image: renoFacadeImg },
+        { title: 'Nội thất phòng khách Japandi', image: modeInteriorImg },
+        { title: 'Tổng thể đô thị ven sông', image: modeUrbanImg },
+      ]}
+      promptTitle="2. Mô tả góc nhìn & chuyển động camera"
+      promptPlaceholder="Ví dụ: Xoay camera sang góc nghiêng 45 độ bên phải nhìn về sảnh chính, giữ nguyên hệ lam gỗ, màu đá và hồ bơi phản chiếu..."
+      defaultPrompt="Xoay camera sang góc phối cảnh 45 độ bên phải tầm mắt người đi, giữ nguyên 100% tỷ lệ hình khối, vật liệu gỗ sồi, kính tràn viền và cảnh quan xung quanh"
+      autoPromptsByMode={{
+        sync: [
+          'Chuyển sang góc phối cảnh 3/4 bên phải cách công trình 15 mét, giữ nguyên tuyệt đối hệ mái, ban công lam gỗ, vật liệu đá ốp và hồ bơi vô cực',
+          'Góc nhìn chính diện cân đối trục lối vào công trình, bảo toàn toàn bộ chi tiết kiến trúc và ánh sáng từ ảnh neo gốc',
+        ],
+        creative: [
+          'Góc nhìn ngước từ sân vườn hướng lên ban công tầng 2 và tầng 3, lấy tiền cảnh thảm cỏ và hàng cây xanh, giữ đồng nhất kiến trúc gốc',
+          'Góc cận cảnh khu vực sảnh đón và mặt nước phản chiếu với độ sâu trường ảnh xóa phông nhẹ f/2.8',
+        ],
+        batch: [
+          'Góc nhìn flycam từ trên cao xuống chếch 35 độ bao quát toàn bộ khuôn viên biệt thự, mái và sân vườn đồng nhất với ảnh gốc',
+          'Góc phối cảnh bên hông nhìn qua hành lang kính và khu vực bàn ăn ngoài trời',
+        ],
+        relight: [
+          'Giữ nguyên vị trí góc máy ảnh gốc, chuyển toàn bộ bầu trời sang giờ xanh hoàng hôn và bật sáng hệ đèn nội thất ấm 3000K hắt qua vách kính',
+          'Chuyển đổi ánh sáng sang buổi sáng sớm nắng xiên dịu nhẹ, sương mỏng trên mặt hồ phản chiếu kiến trúc sắc nét',
+        ],
+      }}
+      optionGroups={[
+        {
+          key: 'sourceAngle',
+          label: 'Góc máy nguồn',
+          defaultValue: 'Góc chính diện',
+          options: [
+            { value: 'Góc chính diện', label: 'Góc chính diện (Front)' },
+            { value: 'Góc nghiêng 45° trái', label: 'Góc nghiêng 45° trái' },
+            { value: 'Góc nghiêng 45° phải', label: 'Góc nghiêng 45° phải' },
+            { value: 'Flycam trên cao', label: 'Flycam từ trên cao' },
+          ],
+        },
+        {
+          key: 'targetAngle',
+          label: 'Góc máy đích',
+          defaultValue: 'Góc nghiêng 45° bên hông',
+          options: [
+            { value: 'Góc nghiêng 45° bên hông', label: 'Góc nghiêng 45° bên hông' },
+            { value: 'Cận cảnh sảnh vào', label: 'Cận cảnh sảnh vào' },
+            { value: 'Tầm mắt người đi', label: 'Tầm mắt người đi (Eye-level)' },
+            { value: 'Flycam toàn cảnh', label: 'Flycam toàn cảnh (Bird-eye)' },
+          ],
+        },
+        {
+          key: 'lens',
+          label: 'Tiêu cự ống kính',
+          defaultValue: '24mm Kiến trúc',
+          options: [
+            { value: '24mm Kiến trúc', label: '24mm Góc rộng chuẩn KTS' },
+            { value: '35mm Tự nhiên', label: '35mm Góc nhìn tự nhiên' },
+            { value: '50mm Chân dung khối', label: '50mm Đặc tả chi tiết' },
+          ],
+        },
+        {
+          key: 'consistency',
+          label: 'Độ đồng nhất khối',
+          defaultValue: 'Nghiêm ngặt (95%)',
+          options: [
+            { value: 'Nghiêm ngặt (95%)', label: 'Nghiêm ngặt (95%)' },
+            { value: 'Cân bằng (80%)', label: 'Cân bằng (80%)' },
+            { value: 'Mở rộng cảnh quan', label: 'Mở rộng bối cảnh xung quanh' },
+          ],
+        },
+        {
+          key: 'lighting',
+          label: 'Ánh sáng mục tiêu',
+          defaultValue: 'Đồng nhất ảnh gốc',
+          options: [
+            { value: 'Đồng nhất ảnh gốc', label: 'Đồng nhất với ảnh gốc' },
+            { value: 'Hoàng hôn vàng', label: 'Giờ vàng hoàng hôn' },
+            { value: 'Ban đêm đèn ấm', label: 'Ban đêm thắp đèn ấm' },
+          ],
+        },
+        {
+          key: 'context',
+          label: 'Bối cảnh xung quanh',
+          defaultValue: 'Giữ nguyên khuôn viên',
+          options: [
+            { value: 'Giữ nguyên khuôn viên', label: 'Giữ nguyên khuôn viên' },
+            { value: 'Mở rộng sân vườn', label: 'Mở rộng sân vườn & cây xanh' },
+            { value: 'Tuyến phố đô thị', label: 'Phối ghép tuyến phố đô thị' },
+          ],
+        },
+      ]}
+      resultPoolsByMode={{
+        sync: [modeArchImg, renoFacadeImg, ARCH_ASSETS.heroVilla, modeUrbanImg],
+        creative: [renoFacadeImg, modeArchImg, ARCH_ASSETS.renovationAfter, modeInteriorImg],
+        batch: [modeArchImg, modeUrbanImg, renoFacadeImg, ARCH_ASSETS.landscapeUrban],
+        relight: [ARCH_ASSETS.heroVilla, renoFacadeImg, modeArchImg, modeInteriorImg],
+      }}
+      comparatorBeforeLabel="GÓC MỚI AI"
+      comparatorAfterLabel="ẢNH NEO GỐC"
+      emptyHintText="Tải ảnh góc chuẩn ở Bước 1, chọn góc máy đích và số lượng biến thể rồi bấm BẮT ĐẦU RENDER."
+      guideTitle="Hướng dẫn ViewSync Đồng Bộ Góc Nhìn"
+      guideSteps={[
+        {
+          title: 'Đặt ảnh góc neo chuẩn',
+          desc: 'Tải lên một ảnh phối cảnh hoàn thiện làm chuẩn mực cho hình khối, màu sắc và vật liệu.',
+        },
+        {
+          title: 'Chọn góc máy & tiêu cự',
+          desc: 'Thiết lập góc máy nguồn, góc máy đích (nghiêng 45°, flycam, cận cảnh) và độ đồng nhất khối.',
+        },
+        {
+          title: 'Xuất bộ ảnh đồng bộ',
+          desc: 'Kiểm tra từng góc sinh ra qua dải thumbnail bên dưới và đối chiếu trực tiếp với ảnh neo gốc.',
+        },
+      ]}
+      downloadPrefix="ACHIPICS_VIEWSYNC"
+      zoomTitle="Bản Xem Góc Nhìn Đồng Bộ"
+    />
   );
 };

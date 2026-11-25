@@ -160,17 +160,19 @@ export const BeforeAfterSlider: React.FC<BeforeAfterSliderProps> = ({
       onPointerCancel={stopDragging}
       onKeyDown={handleKeyDown}
       onDragStart={(e) => e.preventDefault()}
-      className={`relative w-full aspect-16/9 sm:aspect-16/10 rounded-2xl overflow-hidden select-none touch-none cursor-ew-resize border shadow-2xl outline-none focus-visible:ring-2 focus-visible:ring-[#D9C9A3] ${
-        className.includes('border-') ? '' : 'border-[#302839]'
-      } ${className.includes('bg-') ? '' : 'bg-black'} ${className}`}
+      className={`relative w-full h-full rounded-2xl overflow-hidden select-none touch-none cursor-ew-resize border shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-[#D9C9A3] ${
+        className.includes('aspect-') ? '' : 'min-h-[320px]'
+      } ${
+        className.includes('border-') ? '' : 'border-[#E2D9C8] dark:border-[#24304A]'
+      } ${className.includes('bg-') ? '' : 'bg-[#FAF7F0] dark:bg-[#0E1726]'} ${className}`}
     >
       {/* After image (full width behind) */}
       <img
         src={afterImage}
-        alt="After AI Render"
+        alt={afterLabel}
         draggable={false}
         decoding="async"
-        className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none"
+        className="absolute inset-0 w-full h-full object-contain select-none pointer-events-none"
         referrerPolicy="no-referrer"
       />
 
@@ -182,19 +184,19 @@ export const BeforeAfterSlider: React.FC<BeforeAfterSliderProps> = ({
       >
         <img
           src={beforeImage}
-          alt="Before Original"
+          alt={beforeLabel}
           draggable={false}
           decoding="async"
-          className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none"
+          className="absolute inset-0 w-full h-full object-contain select-none pointer-events-none"
           referrerPolicy="no-referrer"
         />
-        <div className="absolute top-4 left-4 z-10 px-2.5 py-1 rounded-md bg-black/75 backdrop-blur-md text-white text-[11px] font-bold tracking-wide uppercase border border-white/20">
+        <div className="absolute top-3 left-3 z-10 px-2.5 py-1 rounded-md bg-black/75 backdrop-blur-md text-white text-[11px] font-bold tracking-wide uppercase border border-white/20">
           {beforeLabel}
         </div>
       </div>
 
       {/* After Label */}
-      <div className="absolute top-4 right-4 z-10 px-2.5 py-1 rounded-md bg-[#0E1726]/85 backdrop-blur-md text-[#F1ECE2] text-[11px] font-bold tracking-wide uppercase border border-[#D9C9A3]/35 pointer-events-none">
+      <div className="absolute top-3 right-3 z-10 px-2.5 py-1 rounded-md bg-[#0E1726]/85 backdrop-blur-md text-[#F1ECE2] text-[11px] font-bold tracking-wide uppercase border border-[#D9C9A3]/35 pointer-events-none">
         {afterLabel}
       </div>
 
@@ -210,18 +212,9 @@ export const BeforeAfterSlider: React.FC<BeforeAfterSliderProps> = ({
             isDragging ? 'scale-110 ring-4 ring-[#D9C9A3]/35' : 'scale-100'
           }`}
         >
-          <svg
-            className="w-4 h-4 text-[#0E1726]"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <polyline points="15 18 9 12 15 6" />
-            <polyline points="9 18 3 12 9 6" />
-          </svg>
+          <span className="material-symbols-outlined text-[18px] text-[#0E1726]">
+            compare_arrows
+          </span>
         </div>
       </div>
     </div>

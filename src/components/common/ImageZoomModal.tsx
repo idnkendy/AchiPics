@@ -33,27 +33,27 @@ export const ImageZoomModal: React.FC<ImageZoomModalProps> = ({
       <div className="flex items-center justify-between z-10 max-w-7xl mx-auto w-full">
         <div>
           <h3 className="text-white font-bold text-sm sm:text-base">{title}</h3>
-          <span className="text-purple-400 text-xs">Phóng to xem từng chi tiết vật liệu & vân gỗ</span>
+          <span className="text-[#DDCDA8] text-xs">Phóng to xem từng chi tiết vật liệu & ánh sáng</span>
         </div>
 
         <div className="flex items-center gap-2">
           <button
             onClick={() => setScale((s) => Math.max(0.5, s - 0.25))}
-            className="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors"
+            className="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
             title="Thu nhỏ"
           >
             <ZoomOut className="w-4 h-4" />
           </button>
           <button
             onClick={() => setScale((s) => Math.min(2.5, s + 0.25))}
-            className="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors"
+            className="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
             title="Phóng to"
           >
             <ZoomIn className="w-4 h-4" />
           </button>
           <button
             onClick={handleDownload}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg gradient-purple text-white text-xs font-semibold shadow-lg hover:opacity-90 transition-opacity"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gradient-to-r from-[#D9C9A3] to-[#EDE2C8] text-[#0E1726] text-xs font-bold shadow-lg hover:opacity-90 transition-opacity cursor-pointer"
           >
             <Download className="w-4 h-4" />
             <span>Tải về</span>

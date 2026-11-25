@@ -59,8 +59,8 @@ export const HomepageHeader: React.FC = () => {
       className={`fixed top-0 left-0 right-0 z-50 h-[64px] transition-all duration-300 flex items-center px-6 ${
         isScrolled
           ? isLight
-            ? 'bg-[#FDFBF7]/95 backdrop-blur-xl border-b border-[#E2D9C8] shadow-sm text-[#121D30]'
-            : 'bg-[#0E1726]/90 backdrop-blur-xl border-b border-[#24304A] shadow-xl text-[#F1ECE2]'
+            ? 'bg-[#FFFFFF]/95 backdrop-blur-xl border-b border-[#E2D9C8] shadow-sm text-[#121D30]'
+            : 'bg-[#0E1726]/92 backdrop-blur-xl border-b border-[#24304A] shadow-xl text-[#F1ECE2]'
           : isLight
             ? 'bg-transparent text-[#121D30]'
             : 'bg-transparent text-[#F1ECE2]'
@@ -75,7 +75,7 @@ export const HomepageHeader: React.FC = () => {
           }}
           className="flex items-center gap-2.5 cursor-pointer group select-none"
         >
-          <div className="w-8 h-8 rounded-lg bg-[#D9C9A3] flex items-center justify-center text-[#0E1726] font-extrabold text-[15px] tracking-tight group-hover:scale-105 transition-transform shadow-xs">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#D9C9A3] to-[#EDE2C8] border border-[#D9C9A3]/60 flex items-center justify-center text-[#0E1726] font-extrabold text-[15px] tracking-tight group-hover:scale-105 transition-transform shadow-xs">
             A
           </div>
           <span
@@ -96,7 +96,7 @@ export const HomepageHeader: React.FC = () => {
             className={`text-[14px] font-semibold tracking-[0.2px] transition-colors cursor-pointer flex items-center gap-1.5 ${
               isLight
                 ? 'text-[#8E733D] hover:text-[#121D30]'
-                : 'text-[#DDCDA8] hover:text-[#F1ECE2]'
+                : 'text-[#D9C9A3] hover:text-[#F1ECE2]'
             }`}
           >
             <span>Tạo ảnh</span>
@@ -105,7 +105,7 @@ export const HomepageHeader: React.FC = () => {
             onClick={() => setActiveRoute('/pricing')}
             className={`text-[13px] font-medium tracking-[0.2px] transition-colors cursor-pointer ${
               isLight
-                ? 'text-[#57657E] hover:text-[#121D30]'
+                ? 'text-[#57657E] hover:text-[#8E733D]'
                 : 'text-[#9AA3B5] hover:text-[#F1ECE2]'
             }`}
           >
@@ -115,7 +115,7 @@ export const HomepageHeader: React.FC = () => {
             href="#contact"
             className={`text-[13px] font-medium tracking-[0.2px] transition-colors ${
               isLight
-                ? 'text-[#57657E] hover:text-[#121D30]'
+                ? 'text-[#57657E] hover:text-[#8E733D]'
                 : 'text-[#9AA3B5] hover:text-[#F1ECE2]'
             }`}
           >
@@ -132,37 +132,37 @@ export const HomepageHeader: React.FC = () => {
               <div
                 className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-colors ${
                   isLight
-                    ? 'bg-[#F0EAE0] border-[#E2D9C8] text-[#121D30]'
+                    ? 'bg-[#FAF7F0] border-[#E2D9C8] text-[#121D30]'
                     : 'bg-[#121D30] border-[#24304A] text-[#F1ECE2]'
                 }`}
               >
-                <Coins className="w-4 h-4 text-[#D9C9A3]" />
+                <Coins className="w-4 h-4 text-amber-500" />
                 <span className="text-xs font-bold tabular-nums">
                   {user.credits.toLocaleString()}
                 </span>
                 <button
                   onClick={() => setActiveRoute('/payment')}
-                  className="px-2 py-0.5 text-[11px] font-bold text-[#0E1726] bg-[#D9C9A3] hover:bg-[#E4D5B2] rounded-full transition-colors cursor-pointer"
+                  className="px-2.5 py-0.5 text-[11px] font-bold text-[#0E1726] bg-gradient-to-r from-[#D9C9A3] to-[#EDE2C8] hover:opacity-95 rounded-full transition-opacity cursor-pointer"
                 >
                   {t('btnTopUp')}
                 </button>
               </div>
 
-              {/* White / Dark Mode Toggle next to credits */}
+              {/* Light / Dark Mode Toggle */}
               <button
                 onClick={toggleTheme}
-                title={isLight ? 'Chuyển sang Dark mode (Giao diện tối)' : 'Chuyển sang White mode (Giao diện sáng)'}
-                aria-label={isLight ? 'Chuyển sang Dark mode' : 'Chuyển sang White mode'}
+                title={isLight ? 'Chuyển sang Dark mode (Giao diện tối)' : 'Chuyển sang Light mode (Giao diện sáng)'}
+                aria-label={isLight ? 'Chuyển sang Dark mode' : 'Chuyển sang Light mode'}
                 className={`p-2 rounded-full border transition-all cursor-pointer flex items-center justify-center ${
                   isLight
-                    ? 'bg-[#F0EAE0] hover:bg-[#E5DDCB] border-[#E2D9C8] text-[#B45309]'
+                    ? 'bg-[#FAF7F0] hover:bg-[#F0EAE0] border-[#E2D9C8] text-[#8E733D]'
                     : 'bg-[#121D30] hover:bg-[#1C2944] border-[#24304A] text-[#D9C9A3]'
                 }`}
               >
                 {isLight ? (
-                  <Moon className="w-4 h-4 text-[#475569] transition-transform hover:-rotate-12" />
+                  <Moon className="w-4 h-4 transition-transform hover:-rotate-12" />
                 ) : (
-                  <Sun className="w-4 h-4 text-[#D9C9A3] transition-transform hover:rotate-45" />
+                  <Sun className="w-4 h-4 transition-transform hover:rotate-45" />
                 )}
               </button>
 
@@ -172,18 +172,18 @@ export const HomepageHeader: React.FC = () => {
                   onClick={() => setIsAvatarOpen(!isAvatarOpen)}
                   className={`flex items-center gap-1.5 p-1 pl-1.5 pr-2 rounded-xl border transition-all cursor-pointer shadow-xs ${
                     isLight
-                      ? 'bg-[#F0EAE0] hover:bg-[#E5DDCB] border-[#E2D9C8] text-[#121D30]'
+                      ? 'bg-[#FAF7F0] hover:bg-[#F0EAE0] border-[#E2D9C8] text-[#121D30]'
                       : 'bg-[#121D30] hover:bg-[#1C2944] border-[#24304A] text-[#F1ECE2]'
                   }`}
                   aria-label="Tài khoản cá nhân"
                 >
-                  <div className="w-7 h-7 rounded-lg bg-[#D9C9A3] flex items-center justify-center text-[#0E1726] font-bold text-xs shadow-xs">
+                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#D9C9A3] to-[#EDE2C8] flex items-center justify-center text-[#0E1726] font-bold text-xs shadow-xs">
                     {user.name.charAt(0).toUpperCase() || 'U'}
                   </div>
                   <ChevronDown
                     className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                      isLight ? 'text-[#64748B]' : 'text-[#9AA3B5]'
-                    } ${isAvatarOpen ? 'rotate-180 text-[#D9C9A3]' : ''}`}
+                      isLight ? 'text-[#57657E]' : 'text-[#9AA3B5]'
+                    } ${isAvatarOpen ? 'rotate-180' : ''}`}
                   />
                 </button>
 
@@ -242,11 +242,11 @@ export const HomepageHeader: React.FC = () => {
                         }}
                         className={`w-full flex items-center gap-2 px-4 py-2 text-xs transition-colors cursor-pointer ${
                           isLight
-                            ? 'text-[#475569] hover:bg-[#F4EFE6] hover:text-[#121D30]'
+                            ? 'text-[#57657E] hover:bg-[#FAF7F0] hover:text-[#121D30]'
                             : 'text-[#9AA3B5] hover:bg-[#1C2944] hover:text-[#F1ECE2]'
                         }`}
                       >
-                        <User className="w-4 h-4 text-[#D9C9A3]" />
+                        <User className={`w-4 h-4 ${isLight ? 'text-[#8E733D]' : 'text-[#D9C9A3]'}`} />
                         <span>{t('tabProfile')}</span>
                       </button>
                       <button
@@ -256,11 +256,11 @@ export const HomepageHeader: React.FC = () => {
                         }}
                         className={`w-full flex items-center gap-2 px-4 py-2 text-xs transition-colors cursor-pointer ${
                           isLight
-                            ? 'text-[#475569] hover:bg-[#F4EFE6] hover:text-[#121D30]'
+                            ? 'text-[#57657E] hover:bg-[#FAF7F0] hover:text-[#121D30]'
                             : 'text-[#9AA3B5] hover:bg-[#1C2944] hover:text-[#F1ECE2]'
                         }`}
                       >
-                        <ImageIcon className="w-4 h-4 text-[#D9C9A3]" />
+                        <ImageIcon className={`w-4 h-4 ${isLight ? 'text-[#8E733D]' : 'text-[#D9C9A3]'}`} />
                         <span>{t('navHistory')}</span>
                       </button>
                       <button
@@ -270,11 +270,11 @@ export const HomepageHeader: React.FC = () => {
                         }}
                         className={`w-full flex items-center gap-2 px-4 py-2 text-xs transition-colors cursor-pointer ${
                           isLight
-                            ? 'text-[#475569] hover:bg-[#F4EFE6] hover:text-[#121D30]'
+                            ? 'text-[#57657E] hover:bg-[#FAF7F0] hover:text-[#121D30]'
                             : 'text-[#9AA3B5] hover:bg-[#1C2944] hover:text-[#F1ECE2]'
                         }`}
                       >
-                        <CreditCard className="w-4 h-4 text-[#D9C9A3]" />
+                        <CreditCard className={`w-4 h-4 ${isLight ? 'text-[#8E733D]' : 'text-[#D9C9A3]'}`} />
                         <span>{t('navPricing')}</span>
                       </button>
                     </div>
@@ -298,29 +298,25 @@ export const HomepageHeader: React.FC = () => {
             </div>
           ) : (
             <div className="flex items-center gap-2">
-              {/* White / Dark Mode Toggle Button for Guests */}
+              {/* Light / Dark Mode Toggle Button for Guests */}
               <button
                 onClick={toggleTheme}
-                title={isLight ? 'Chuyển sang Dark mode (Giao diện tối)' : 'Chuyển sang White mode (Giao diện sáng)'}
-                aria-label={isLight ? 'Chuyển sang Dark mode' : 'Chuyển sang White mode'}
+                title={isLight ? 'Chuyển sang Dark mode (Giao diện tối)' : 'Chuyển sang Light mode (Giao diện sáng)'}
+                aria-label={isLight ? 'Chuyển sang Dark mode' : 'Chuyển sang Light mode'}
                 className={`p-2 rounded-full border transition-all cursor-pointer flex items-center justify-center ${
                   isLight
-                    ? 'bg-[#F0EAE0] hover:bg-[#E5DDCB] border-[#E2D9C8] text-[#B45309]'
+                    ? 'bg-[#FAF7F0] hover:bg-[#F0EAE0] border-[#E2D9C8] text-[#8E733D]'
                     : 'bg-[#121D30] hover:bg-[#1C2944] border-[#24304A] text-[#D9C9A3]'
                 }`}
               >
-                {isLight ? (
-                  <Moon className="w-4 h-4 text-[#475569]" />
-                ) : (
-                  <Sun className="w-4 h-4 text-[#D9C9A3]" />
-                )}
+                {isLight ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
               </button>
 
               <button
                 onClick={() => setActiveRoute('/auth')}
                 className={`text-[13px] font-medium px-3.5 py-2 rounded-full transition-all cursor-pointer ${
                   isLight
-                    ? 'text-[#57657E] hover:text-[#121D30] hover:bg-[#EFE8D8]'
+                    ? 'text-[#57657E] hover:text-[#121D30] hover:bg-[#F0EAE0]'
                     : 'text-[#9AA3B5] hover:text-[#F1ECE2] hover:bg-[#1C2944]'
                 }`}
               >
@@ -328,11 +324,7 @@ export const HomepageHeader: React.FC = () => {
               </button>
               <button
                 onClick={() => setActiveRoute('/image')}
-                className={`px-5 py-2 text-[13px] font-semibold rounded-full shadow-md transition-all cursor-pointer hover:opacity-90 ${
-                  isLight
-                    ? 'text-[#F8F5EE] bg-[#121D30] hover:bg-[#1C2944]'
-                    : 'text-[#0E1726] bg-[#F1ECE2] hover:bg-[#EDE2C8]'
-                }`}
+                className="px-5 py-2 text-[13px] font-bold rounded-full shadow-md transition-all cursor-pointer text-[#0E1726] bg-gradient-to-r from-[#D9C9A3] to-[#EDE2C8] hover:opacity-95"
               >
                 Bắt đầu
               </button>
@@ -344,11 +336,11 @@ export const HomepageHeader: React.FC = () => {
         <div className="flex md:hidden items-center gap-2">
           <button
             onClick={toggleTheme}
-            title={isLight ? 'Chuyển sang Dark mode (Giao diện tối)' : 'Chuyển sang White mode (Giao diện sáng)'}
-            aria-label={isLight ? 'Chuyển sang Dark mode' : 'Chuyển sang White mode'}
+            title={isLight ? 'Chuyển sang Dark mode (Giao diện tối)' : 'Chuyển sang Light mode (Giao diện sáng)'}
+            aria-label={isLight ? 'Chuyển sang Dark mode' : 'Chuyển sang Light mode'}
             className={`p-2 rounded-lg border transition-all cursor-pointer flex items-center justify-center ${
               isLight
-                ? 'bg-[#F0EAE0] hover:bg-[#E5DDCB] border-[#E2D9C8] text-[#475569]'
+                ? 'bg-[#FAF7F0] hover:bg-[#F0EAE0] border-[#E2D9C8] text-[#8E733D]'
                 : 'bg-[#121D30] hover:bg-[#1C2944] border-[#24304A] text-[#D9C9A3]'
             }`}
           >
@@ -359,7 +351,7 @@ export const HomepageHeader: React.FC = () => {
             onClick={() => setIsMobileMenu(!isMobileMenu)}
             className={`p-2 border rounded-lg cursor-pointer transition-colors ${
               isLight
-                ? 'text-[#121D30] hover:bg-[#EFE8D8] bg-[#F0EAE0] border-[#E2D9C8]'
+                ? 'text-[#121D30] hover:bg-[#F0EAE0] bg-[#FFFFFF] border-[#E2D9C8]'
                 : 'text-[#F1ECE2] hover:text-white bg-[#121D30] border-[#24304A]'
             }`}
             aria-label="Toggle navigation"
@@ -383,7 +375,7 @@ export const HomepageHeader: React.FC = () => {
                 setActiveRoute('/image');
                 setIsMobileMenu(false);
               }}
-              className="text-left text-base font-bold text-[#0E1726] p-3.5 rounded-xl bg-[#D9C9A3] hover:bg-[#E4D5B2] flex items-center gap-3 transition-colors shadow-sm cursor-pointer"
+              className="text-left text-base font-bold text-[#0E1726] p-3.5 rounded-xl bg-gradient-to-r from-[#D9C9A3] to-[#EDE2C8] hover:opacity-95 flex items-center gap-3 transition-opacity shadow-sm cursor-pointer"
             >
               <span className="material-symbols-outlined text-[#0E1726]">auto_awesome</span>
               <span>Tạo ảnh</span>
@@ -401,11 +393,7 @@ export const HomepageHeader: React.FC = () => {
                   : 'text-[#F1ECE2] bg-[#16213A] hover:bg-[#1C2944] border-[#24304A]'
               }`}
             >
-              <span
-                className={`material-symbols-outlined ${
-                  isLight ? 'text-[#8E733D]' : 'text-[#DDCDA8]'
-                }`}
-              >
+              <span className={`material-symbols-outlined ${isLight ? 'text-[#8E733D]' : 'text-[#D9C9A3]'}`}>
                 payments
               </span>
               <span>{t('navPricing')}</span>
@@ -421,11 +409,7 @@ export const HomepageHeader: React.FC = () => {
                   : 'text-[#F1ECE2] bg-[#16213A] hover:bg-[#1C2944] border-[#24304A]'
               }`}
             >
-              <span
-                className={`material-symbols-outlined ${
-                  isLight ? 'text-[#8E733D]' : 'text-[#DDCDA8]'
-                }`}
-              >
+              <span className={`material-symbols-outlined ${isLight ? 'text-[#8E733D]' : 'text-[#D9C9A3]'}`}>
                 mail
               </span>
               <span>Liên hệ</span>
@@ -447,18 +431,10 @@ export const HomepageHeader: React.FC = () => {
                   }`}
                 >
                   <div>
-                    <p
-                      className={`text-sm font-bold ${
-                        isLight ? 'text-[#121D30]' : 'text-[#F1ECE2]'
-                      }`}
-                    >
+                    <p className={`text-sm font-bold ${isLight ? 'text-[#121D30]' : 'text-[#F1ECE2]'}`}>
                       {user.name}
                     </p>
-                    <p
-                      className={`text-xs font-semibold ${
-                        isLight ? 'text-[#8E733D]' : 'text-[#D9C9A3]'
-                      }`}
-                    >
+                    <p className={`text-xs font-semibold ${isLight ? 'text-[#8E733D]' : 'text-[#D9C9A3]'}`}>
                       {user.credits.toLocaleString()} Credits
                     </p>
                   </div>
@@ -467,7 +443,7 @@ export const HomepageHeader: React.FC = () => {
                       setActiveRoute('/payment');
                       setIsMobileMenu(false);
                     }}
-                    className="px-3.5 py-1.5 text-xs font-bold text-[#0E1726] bg-[#D9C9A3] rounded-full"
+                    className="px-3.5 py-1.5 text-xs font-bold text-[#0E1726] bg-gradient-to-r from-[#D9C9A3] to-[#EDE2C8] rounded-full"
                   >
                     {t('btnTopUp')}
                   </button>
@@ -499,11 +475,7 @@ export const HomepageHeader: React.FC = () => {
                     setActiveRoute('/image');
                     setIsMobileMenu(false);
                   }}
-                  className={`w-full py-3.5 text-center text-sm font-bold rounded-xl ${
-                    isLight
-                      ? 'text-[#F8F5EE] bg-[#121D30]'
-                      : 'text-[#0E1726] bg-[#F1ECE2]'
-                  }`}
+                  className="w-full py-3.5 text-center text-sm font-bold rounded-xl text-[#0E1726] bg-gradient-to-r from-[#D9C9A3] to-[#EDE2C8]"
                 >
                   Bắt đầu miễn phí
                 </button>

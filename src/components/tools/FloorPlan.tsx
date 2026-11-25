@@ -1,291 +1,168 @@
-import React, { useState } from 'react';
-import { useApp } from '../../context/AppContext';
+import React from 'react';
 import { ARCH_ASSETS } from '../../data/mockAssets';
-import { BeforeAfterSlider } from '../common/BeforeAfterSlider';
-import {
-  Layers,
-  Upload,
-  Sparkles,
-  Download,
-  Building,
-  Armchair,
-  MapPin,
-  Trees,
-  RefreshCw,
-  X,
-} from 'lucide-react';
+import { StudioWorkspace } from './StudioWorkspace';
+
+import floorplanIsoImg from '../../assets/images/floorplan_iso_1794989299592.jpg';
+import modeInteriorImg from '../../assets/images/mode_interior_1794987578425.jpg';
+import modeUrbanImg from '../../assets/images/mode_urban_1794987578552.jpg';
+import modeLandscapeImg from '../../assets/images/mode_landscape_1794987579660.jpg';
 
 export const FloorPlan: React.FC = () => {
-  const { deductCredits, addHistoryItem } = useApp();
-
-  const [subTab, setSubTab] = useState<'arch' | 'interior' | 'urban' | 'landscape'>('arch');
-  const [planType, setPlanType] = useState('Isometric 3D Cắt Lớp');
-  const [flooring, setFlooring] = useState('Sàn gỗ sồi tự nhiên');
-  const [wallStyle, setWallStyle] = useState('Tường trắng tối giản 200mm');
-  const [lighting, setLighting] = useState('Ánh sáng ban ngày mềm mại');
-  const [uploadedPlan, setUploadedPlan] = useState<string | null>(null);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [resultImage, setResultImage] = useState<string>(ARCH_ASSETS.floorPlan3D);
-
-  const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => setUploadedPlan(event.target?.result as string);
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleGenerate = () => {
-    if (!deductCredits(40)) {
-      alert('Không đủ Credits. Vui lòng nạp thêm!');
-      return;
-    }
-    setIsGenerating(true);
-    setTimeout(() => {
-      setIsGenerating(false);
-      setResultImage(ARCH_ASSETS.floorPlan3D);
-      addHistoryItem({
-        id: `fp-${Date.now()}`,
-        tool: 'FloorPlan',
-        prompt: `Mặt bằng 3D phân khu ${subTab}: ${planType}, vật liệu ${flooring}`,
-        resultImage: ARCH_ASSETS.floorPlan3D,
-        originalImage: uploadedPlan || undefined,
-        createdAt: new Date().toLocaleString(),
-        isFavorite: false,
-        aspectRatio: '4:3',
-        cost: 40,
-      });
-    }, 2000);
-  };
-
   return (
-    <div className="h-[calc(100vh-112px)] overflow-hidden flex flex-col lg:flex-row bg-[#0E1726]">
-      {/* LEFT CONTROLS */}
-      <div className="w-full lg:w-[460px] h-full overflow-y-auto border-r border-[#24304A] bg-[#121D30] p-5 space-y-6 shrink-0">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <Layers className="w-4 h-4 text-[#DDCDA8]" />
-            <h2 className="text-base font-bold text-[#F1ECE2]">
-              Chuyển Đổi Mặt Bằng 2D Sang 3D
-            </h2>
-          </div>
-          <p className="text-xs text-[#9AA3B5]">
-            Biến bản vẽ CAD, PDF mặt bằng kiến trúc thành phối cảnh 3D có nội thất chân thực
-          </p>
-        </div>
-
-        {/* 4 Sub-Tabs */}
-        <div className="grid grid-cols-4 gap-1 p-1 rounded-xl bg-[#111B2D] border border-[#24304A]">
-          <button
-            onClick={() => setSubTab('arch')}
-            className={`py-1.5 text-[11px] font-bold rounded-lg transition-all cursor-pointer ${
-              subTab === 'arch'
-                ? 'bg-[#D9C9A3] text-[#0E1726] shadow-sm'
-                : 'text-[#9AA3B5] hover:text-[#F1ECE2]'
-            }`}
-          >
-            Kiến Trúc
-          </button>
-          <button
-            onClick={() => setSubTab('interior')}
-            className={`py-1.5 text-[11px] font-bold rounded-lg transition-all cursor-pointer ${
-              subTab === 'interior'
-                ? 'bg-[#D9C9A3] text-[#0E1726] shadow-sm'
-                : 'text-[#9AA3B5] hover:text-[#F1ECE2]'
-            }`}
-          >
-            Nội Thất
-          </button>
-          <button
-            onClick={() => setSubTab('urban')}
-            className={`py-1.5 text-[11px] font-bold rounded-lg transition-all cursor-pointer ${
-              subTab === 'urban'
-                ? 'bg-[#D9C9A3] text-[#0E1726] shadow-sm'
-                : 'text-[#9AA3B5] hover:text-[#F1ECE2]'
-            }`}
-          >
-            Quy Hoạch
-          </button>
-          <button
-            onClick={() => setSubTab('landscape')}
-            className={`py-1.5 text-[11px] font-bold rounded-lg transition-all cursor-pointer ${
-              subTab === 'landscape'
-                ? 'bg-[#D9C9A3] text-[#0E1726] shadow-sm'
-                : 'text-[#9AA3B5] hover:text-[#F1ECE2]'
-            }`}
-          >
-            Cảnh Quan
-          </button>
-        </div>
-
-        {/* Upload Box */}
-        <div>
-          <label className="text-xs font-semibold text-[#F1ECE2] block mb-2">
-            1. Tải lên ảnh mặt bằng 2D (CAD / PDF / Vẽ tay)
-          </label>
-          {uploadedPlan ? (
-            <div className="relative rounded-xl overflow-hidden border border-[#D9C9A3]/40 aspect-video bg-[#111B2D]">
-              <img src={uploadedPlan} alt="Floor plan preview" className="w-full h-full object-contain" />
-              <button
-                onClick={() => setUploadedPlan(null)}
-                className="absolute top-2 right-2 p-1.5 rounded-full bg-black/80 text-white hover:text-rose-400 cursor-pointer"
-              >
-                <X className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          ) : (
-            <label className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-[#24304A] hover:border-[#D9C9A3] rounded-2xl bg-[#111B2D]/60 hover:bg-[#111B2D] transition-all cursor-pointer">
-              <div className="w-10 h-10 rounded-xl bg-[#D9C9A3] text-[#0E1726] flex items-center justify-center mb-2 shadow-sm font-bold">
-                <Upload className="w-5 h-5" />
-              </div>
-              <p className="text-xs font-semibold text-[#F1ECE2]">Bấm hoặc kéo thả mặt bằng vào đây</p>
-              <p className="text-[10px] text-[#646E84] mt-1">Hỗ trợ PNG, JPG, CAD export, độ phân giải cao</p>
-              <input type="file" accept="image/*" onChange={handleUpload} className="hidden" />
-            </label>
-          )}
-        </div>
-
-        {/* Options */}
-        <div className="space-y-4 pt-2 border-t border-[#24304A]">
-          <div>
-            <label className="text-xs font-medium text-[#9AA3B5] block mb-1.5">
-              2. Kiểu phối cảnh 3D
-            </label>
-            <select
-              value={planType}
-              onChange={(e) => setPlanType(e.target.value)}
-              className="w-full text-xs font-medium bg-[#111B2D] border border-[#24304A] text-[#F1ECE2] rounded-xl px-3 py-2.5 focus:outline-none focus:border-[#D9C9A3]"
-            >
-              <option value="Isometric 3D Cắt Lớp">Isometric 3D Cắt Lớp (Góc nhìn từ trên chéo 45°)</option>
-              <option value="Perspective Phối Cảnh">Perspective Phối Cảnh Góc Rộng (Góc nhìn người đi)</option>
-              <option value="Top-Down 3D View">Top-down 3D View (Mặt bằng từ trên nhìn thẳng có bóng đổ)</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="text-xs font-medium text-[#9AA3B5] block mb-1.5">
-              3. Loại sàn chính
-            </label>
-            <select
-              value={flooring}
-              onChange={(e) => setFlooring(e.target.value)}
-              className="w-full text-xs font-medium bg-[#111B2D] border border-[#24304A] text-[#F1ECE2] rounded-xl px-3 py-2.5 focus:outline-none focus:border-[#D9C9A3]"
-            >
-              <option value="Sàn gỗ sồi tự nhiên">Sàn Gỗ Sồi Tự Nhiên (Light Oak Wood)</option>
-              <option value="Gạch vân mây Calacatta">Gạch Đá Cẩm Thạch Vân Mây (Calacatta Marble)</option>
-              <option value="Bê tông mài Terrazzo">Bê Tông Mài Terrazzo Hiện Đại</option>
-              <option value="Gỗ công nghiệp màu hạt dẻ">Gỗ Óc Chó Sang Trọng (Walnut)</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="text-xs font-medium text-[#9AA3B5] block mb-1.5">
-              4. Chiều cao & kiểu tường
-            </label>
-            <select
-              value={wallStyle}
-              onChange={(e) => setWallStyle(e.target.value)}
-              className="w-full text-xs font-medium bg-[#111B2D] border border-[#24304A] text-[#F1ECE2] rounded-xl px-3 py-2.5 focus:outline-none focus:border-[#D9C9A3]"
-            >
-              <option value="Tường trắng tối giản 200mm">Tường cắt lửng cao 1.2m hiển thị đồ đạc</option>
-              <option value="Tường kính tràn viền trong suốt">Tường kính phân vùng trong suốt</option>
-              <option value="Tường hoàn chỉnh có trần mở">Tường đầy đủ trần mở không gian</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="text-xs font-medium text-[#9AA3B5] block mb-1.5">
-              5. Ánh sáng nội thất
-            </label>
-            <select
-              value={lighting}
-              onChange={(e) => setLighting(e.target.value)}
-              className="w-full text-xs font-medium bg-[#111B2D] border border-[#24304A] text-[#F1ECE2] rounded-xl px-3 py-2.5 focus:outline-none focus:border-[#D9C9A3]"
-            >
-              <option value="Ánh sáng ban ngày mềm mại">Ban ngày tự nhiên (Soft Daylight)</option>
-              <option value="Đèn trần & Led hắt ấm áp">Đèn trần ấm & dải led hắt khe (3000K)</option>
-              <option value="Hoàng hôn chiều rọi qua cửa kính">Ánh hoàng hôn rọi xiên qua cửa sổ</option>
-            </select>
-          </div>
-        </div>
-
-        {/* Generate Button */}
-        <div className="pt-3">
-          <div className="flex items-center justify-between text-xs mb-2">
-            <span className="text-[#9AA3B5]">Chi phí thực hiện</span>
-            <span className="font-extrabold text-[#DDCDA8]">40 Credits</span>
-          </div>
-
-          <button
-            onClick={handleGenerate}
-            disabled={isGenerating}
-            className={`w-full py-3.5 px-6 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 cursor-pointer ${
-              isGenerating
-                ? 'bg-[#1C2944] text-[#646E84] cursor-not-allowed'
-                : 'bg-[#D9C9A3] hover:bg-[#E4D5B2] text-[#0E1726] shadow-lg shadow-[#D9C9A3]/20 hover:scale-[1.01]'
-            }`}
-          >
-            {isGenerating ? (
-              <>
-                <RefreshCw className="w-4 h-4 animate-spin text-[#0E1726]" />
-                <span>Đang phân tích & dựng 3D...</span>
-              </>
-            ) : (
-              <>
-                <Sparkles className="w-4 h-4" />
-                <span>Khởi Tạo 3D Floor Plan</span>
-              </>
-            )}
-          </button>
-        </div>
-      </div>
-
-      {/* RIGHT DISPLAY */}
-      <div className="flex-1 h-full overflow-y-auto p-4 sm:p-6 flex flex-col justify-between bg-[#0E1726]">
-        <div className="max-w-4xl mx-auto w-full space-y-6">
-          <div className="flex items-center justify-between border-b border-[#24304A] pb-3">
-            <div>
-              <h3 className="text-sm font-bold text-[#F1ECE2]">Kết Quả Phối Cảnh 3D Mặt Bằng</h3>
-              <p className="text-xs text-[#9AA3B5]">AI tự động phân bổ đồ nội thất, sàn và ánh sáng</p>
-            </div>
-            <a
-              href={resultImage}
-              download="3D_FLOORPLAN.png"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#D9C9A3] hover:bg-[#E4D5B2] text-[#0E1726] text-xs font-bold transition-all shadow-md shadow-[#D9C9A3]/20"
-            >
-              <Download className="w-3.5 h-3.5" />
-              <span>Tải Ảnh 4K</span>
-            </a>
-          </div>
-
-          {/* Main Visual */}
-          <div className="rounded-2xl overflow-hidden border border-[#24304A] bg-[#121D30] aspect-4/3 shadow-2xl relative">
-            <img
-              src={resultImage}
-              alt="3D Floor Plan Output"
-              className="w-full h-full object-cover"
-              referrerPolicy="no-referrer"
-            />
-            <div className="absolute top-3 left-3 px-3 py-1 rounded-md bg-[#0E1726]/85 backdrop-blur-md text-[#F1ECE2] text-xs font-bold border border-[#24304A]">
-              3D Isometric View · 4K Master
-            </div>
-          </div>
-
-          {/* Before / After Slider */}
-          <div className="pt-4 border-t border-[#24304A]">
-            <h4 className="text-xs font-bold text-[#F1ECE2] uppercase tracking-wider mb-3">
-              So Sánh Mặt Bằng 2D Gốc vs 3D Hoàn Thiện
-            </h4>
-            <BeforeAfterSlider
-              beforeImage={uploadedPlan || ARCH_ASSETS.renovationBefore}
-              afterImage={resultImage}
-              beforeLabel="Bản vẽ 2D gốc"
-              afterLabel="Mặt bằng 3D hoàn thiện"
-            />
-          </div>
-        </div>
-      </div>
-    </div>
+    <StudioWorkspace
+      toolId="floorplan"
+      toolName="Mặt Bằng 2D Sang 3D AI"
+      dashboardTitle="Chọn chế độ Mặt Bằng 3D"
+      dashboardSubtitle="Chuyển đổi bản vẽ mặt bằng CAD, PDF hoặc phác thảo 2D thành phối cảnh 3D đầy đủ nội thất, vật liệu và ánh sáng"
+      modes={[
+        {
+          id: 'arch',
+          title: 'Mặt bằng Kiến trúc',
+          desc: 'Dựng mặt bằng cắt lớp 3D tổng thể nhà ở, biệt thự và công trình dân dụng.',
+          icon: 'layers',
+          image: floorplanIsoImg,
+        },
+        {
+          id: 'interior',
+          title: 'Mặt bằng Nội thất',
+          desc: 'Tự động bố trí sofa, bàn ăn, giường ngủ và chất liệu sàn cho căn hộ 3D.',
+          icon: 'chair',
+          image: modeInteriorImg,
+        },
+        {
+          id: 'urban',
+          title: 'Tổng mặt bằng Quy hoạch',
+          desc: 'Diễn họa 3D phân khu đô thị, trục giao thông và khối công trình từ bản vẽ.',
+          icon: 'location_city',
+          image: modeUrbanImg,
+        },
+        {
+          id: 'landscape',
+          title: 'Mặt bằng Cảnh quan',
+          desc: 'Chuyển bản vẽ sân vườn 2D thành phối cảnh cây xanh, mặt nước và lối dạo.',
+          icon: 'park',
+          image: modeLandscapeImg,
+        },
+      ]}
+      uploadTitle="1. Tải mặt bằng 2D (CAD / PDF / Ảnh)"
+      uploadDragText="Kéo thả ảnh mặt bằng 2D vào đây"
+      uploadFormatsText="Hỗ trợ PNG, JPG, bản xuất CAD/Revit độ nét cao"
+      samples={[
+        { title: 'Mặt bằng căn hộ 2 phòng ngủ', image: ARCH_ASSETS.renovationBefore },
+        { title: 'Mẫu 3D Isometric hoàn thiện', image: floorplanIsoImg },
+        { title: 'Mặt bằng phòng khách mở', image: modeInteriorImg },
+        { title: 'Mặt bằng sân vườn biệt thự', image: modeLandscapeImg },
+      ]}
+      promptTitle="2. Mô tả không gian & vật liệu 3D"
+      promptPlaceholder="Ví dụ: Mặt bằng căn hộ 120m2 phong cách Japandi, sàn gỗ sồi sáng, tường cắt lửng trắng sạch, ánh nắng ban ngày dịu nhẹ..."
+      defaultPrompt="Mặt bằng căn hộ 3D Isometric cắt lớp sắc nét, sàn gỗ sồi tự nhiên kết hợp đá marble ở khu bếp, nội thất bọc vải boucle tối giản, ánh sáng ban ngày mềm mại"
+      autoPromptsByMode={{
+        arch: [
+          'Mặt bằng biệt thự 3D Isometric cắt lớp sạch sẽ, tường trắng 200mm rõ nét, sàn gỗ sồi tự nhiên, nội thất hiện đại ấm cúng, đổ bóng mềm chuẩn trình bày kiến trúc',
+          'Mặt bằng tổng thể tầng trệt nhà phố thông tầng có gara, bếp đảo và giếng trời cây xanh, ánh sáng tự nhiên rọi thẳng',
+        ],
+        interior: [
+          'Phối cảnh mặt bằng nội thất căn hộ 2 phòng ngủ phong cách Japandi, sofa cong kem, bàn ăn gỗ óc chó, thảm len dệt, ánh nắng sớm rọi qua ban công kính',
+          'Mặt bằng penthouse sang trọng tông be ấm, đá travertine phòng tắm, đèn led hắt khe tinh tế',
+        ],
+        urban: [
+          'Tổng mặt bằng quy hoạch khu đô thị ven sông 3D, phân khu biệt thự và cao tầng giật cấp, công viên trung tâm xanh mát, nước hồ phản chiếu trong trẻo',
+          'Diễn họa mặt bằng tổ hợp thương mại đa chức năng, đường dạo bộ lát đá và quảng trường cây xanh',
+        ],
+        landscape: [
+          'Mặt bằng sân vườn biệt thự nhiệt đới 3D, hồ cá koi uốn lượn, sàn gỗ deck ngoài trời, đá bước dặm trên thảm cỏ Nhật và cụm cây cọ xanh mướt',
+          'Phối cảnh mặt bằng công viên resort với hồ bơi vô cực trung tâm, chòi nghỉ và hàng dừa bóng mát',
+        ],
+      }}
+      optionGroups={[
+        {
+          key: 'planType',
+          label: 'Kiểu phối cảnh 3D',
+          defaultValue: 'Isometric 3D Cắt Lớp',
+          options: [
+            { value: 'Isometric 3D Cắt Lớp', label: 'Isometric 3D Cắt Lớp 45°' },
+            { value: 'Top-Down 3D View', label: 'Top-down 3D Nhìn Thẳng' },
+            { value: 'Perspective Phối Cảnh', label: 'Phối Cảnh Góc Rộng' },
+          ],
+        },
+        {
+          key: 'flooring',
+          label: 'Vật liệu sàn chính',
+          defaultValue: 'Sàn gỗ sồi tự nhiên',
+          options: [
+            { value: 'Sàn gỗ sồi tự nhiên', label: 'Gỗ sồi tự nhiên' },
+            { value: 'Đá vân mây Calacatta', label: 'Đá vân mây Calacatta' },
+            { value: 'Bê tông mài Terrazzo', label: 'Bê tông mài Terrazzo' },
+            { value: 'Gỗ óc chó Walnut', label: 'Gỗ óc chó sang trọng' },
+          ],
+        },
+        {
+          key: 'wallStyle',
+          label: 'Kiểu & chiều cao tường',
+          defaultValue: 'Tường cắt lửng 1.2m',
+          options: [
+            { value: 'Tường cắt lửng 1.2m', label: 'Tường cắt lửng 1.2m' },
+            { value: 'Tường cắt sạch tối giản', label: 'Tường cắt sạch tối giản' },
+            { value: 'Tường kính trong suốt', label: 'Tường kính phân vùng' },
+          ],
+        },
+        {
+          key: 'lighting',
+          label: 'Ánh sáng',
+          defaultValue: 'Ban ngày tự nhiên',
+          options: [
+            { value: 'Ban ngày tự nhiên', label: 'Ban ngày tự nhiên' },
+            { value: 'Đèn ấm 3000K', label: 'Đèn trần & LED ấm 3000K' },
+            { value: 'Hoàng hôn rọi xiên', label: 'Hoàng hôn rọi cửa sổ' },
+          ],
+        },
+        {
+          key: 'furnitureDensity',
+          label: 'Mật độ nội thất',
+          defaultValue: 'Đầy đủ tiêu chuẩn',
+          options: [
+            { value: 'Đầy đủ tiêu chuẩn', label: 'Đầy đủ tiêu chuẩn' },
+            { value: 'Tối giản gọn gàng', label: 'Tối giản gọn gàng' },
+            { value: 'Chi tiết cao cấp', label: 'Chi tiết sang trọng' },
+          ],
+        },
+        {
+          key: 'palette',
+          label: 'Tông màu chủ đạo',
+          defaultValue: 'Ấm áp tự nhiên',
+          options: [
+            { value: 'Ấm áp tự nhiên', label: 'Ấm áp tự nhiên (Be / Gỗ)' },
+            { value: 'Trung tính hiện đại', label: 'Trung tính (Xám / Trắng)' },
+            { value: 'Tương phản trầm', label: 'Trầm ấm (Óc chó / Đá đen)' },
+          ],
+        },
+      ]}
+      resultPoolsByMode={{
+        arch: [floorplanIsoImg, ARCH_ASSETS.floorPlan3D, modeInteriorImg, modeLandscapeImg],
+        interior: [floorplanIsoImg, modeInteriorImg, ARCH_ASSETS.floorPlan3D, ARCH_ASSETS.heroInterior],
+        urban: [modeUrbanImg, floorplanIsoImg, ARCH_ASSETS.landscapeUrban, ARCH_ASSETS.floorPlan3D],
+        landscape: [modeLandscapeImg, floorplanIsoImg, ARCH_ASSETS.landscapeUrban, ARCH_ASSETS.floorPlan3D],
+      }}
+      comparatorBeforeLabel="3D AI"
+      comparatorAfterLabel="2D GỐC"
+      emptyHintText="Tải ảnh mặt bằng 2D ở Bước 1 hoặc chọn ảnh mẫu, tùy chỉnh vật liệu rồi bấm BẮT ĐẦU RENDER để dựng phối cảnh 3D."
+      guideTitle="Hướng dẫn chuyển đổi Mặt Bằng 2D → 3D"
+      guideSteps={[
+        {
+          title: 'Tải mặt bằng 2D',
+          desc: 'Sử dụng bản vẽ CAD xuất ảnh rõ nét, PDF chụp màn hình hoặc bản vẽ phác có ký hiệu tường và cửa.',
+        },
+        {
+          title: 'Chọn góc & vật liệu',
+          desc: 'Thiết lập góc Isometric 45° hoặc Top-Down cùng vật liệu sàn, chiều cao tường và ánh sáng mong muốn.',
+        },
+        {
+          title: 'So sánh 2D / 3D',
+          desc: 'Kéo thanh trượt 3D AI / 2D GỐC trực tiếp để đối chiếu vị trí vách ngăn và đồ nội thất trước khi tải về.',
+        },
+      ]}
+      downloadPrefix="ACHIPICS_FLOORPLAN_3D"
+      zoomTitle="Bản Xem Mặt Bằng 3D Chi Tiết"
+    />
   );
 };

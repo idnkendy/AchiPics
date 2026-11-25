@@ -6,7 +6,8 @@ import { PricingPlan } from '../../types';
 import { Check, Sparkles, ArrowRight, ShieldCheck, Zap, Receipt, Headphones, ChevronDown } from 'lucide-react';
 
 export const PublicPricing: React.FC = () => {
-  const { t, setActiveRoute, user, setSelectedPaymentPlan } = useApp();
+  const { t, setActiveRoute, user, setSelectedPaymentPlan, theme } = useApp();
+  const isLight = theme === 'light';
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   const plans: PricingPlan[] = [
@@ -56,7 +57,7 @@ export const PublicPricing: React.FC = () => {
       discountBadge: 'Tiết kiệm 20%',
       features: [
         '25,000 Credits tạo ảnh (~850 lần render)',
-        'Hạn dùng 180 ngày (cộng dồn khi gia hạn)',
+        'Hạn dùng 180 ngày theo chu kỳ gói',
         'Băng thông GPU chuyên dụng siêu tốc',
         'Hỗ trợ tối đa 5 KTS / thiết bị dùng chung',
         'Hỗ trợ xuất hóa đơn VAT điện tử công ty',
@@ -72,11 +73,11 @@ export const PublicPricing: React.FC = () => {
     },
     {
       q: 'Credits chưa dùng hết có bị mất khi hết hạn không?',
-      a: 'Khi bạn gia hạn hoặc mua gói mới trước khi hết hạn, toàn bộ số Credits còn lại sẽ được tự động cộng dồn và gia hạn theo thời hạn của gói mới nhất.',
+      a: 'Có. Credits hoạt động theo cơ chế "Dùng hoặc Mất" (Use-it-or-lose-it): khi gói đăng ký hết hạn hoặc sang chu kỳ gia hạn mới, số Credits còn dư chưa sử dụng sẽ bị hủy bỏ về 0 và không được cộng dồn.',
     },
     {
       q: 'Văn phòng của tôi có được xuất hóa đơn VAT điện tử không?',
-      a: 'Có. OPZEN AI hỗ trợ xuất hóa đơn điện tử VAT đầy đủ theo thông tin doanh nghiệp, công ty kiến trúc xây dựng của bạn ngay sau khi thanh toán.',
+      a: 'Có. AchiPics hỗ trợ xuất hóa đơn điện tử VAT đầy đủ theo thông tin doanh nghiệp, công ty kiến trúc xây dựng của bạn ngay sau khi thanh toán.',
     },
     {
       q: 'Tôi có thể dùng chung một tài khoản trên nhiều máy tính không?',
@@ -90,25 +91,57 @@ export const PublicPricing: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0E1726] text-[#F1ECE2] flex flex-col font-sans selection:bg-[#D9C9A3] selection:text-[#0E1726]">
+    <div
+      className={`min-h-screen flex flex-col font-sans transition-colors ${
+        isLight
+          ? 'bg-[#F4F7FC] text-[#06080D] selection:bg-[#2563EB] selection:text-[#FFFFFF]'
+          : 'bg-[#06080D] text-[#F4F7FB] selection:bg-[#A3E635] selection:text-[#06080D]'
+      }`}
+    >
       <HomepageHeader />
 
       <main className="pt-32 pb-24 flex-1 relative overflow-hidden">
-        {/* Subtle Ambient Radial Glows */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-[radial-gradient(ellipse,rgba(217,201,163,0.06)_0%,transparent_70%)] pointer-events-none" />
-        <div className="absolute top-[600px] left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-[radial-gradient(ellipse,rgba(217,201,163,0.03)_0%,transparent_70%)] pointer-events-none" />
+        {/* Ambient Cobalt + Lime Radial Glows */}
+        <div
+          className={`absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] pointer-events-none ${
+            isLight
+              ? 'bg-[radial-gradient(ellipse,rgba(37,99,235,0.08)_0%,transparent_70%)]'
+              : 'bg-[radial-gradient(ellipse,rgba(37,99,235,0.18)_0%,rgba(163,230,53,0.05)_40%,transparent_72%)]'
+          }`}
+        />
+        <div
+          className={`absolute top-[600px] left-1/2 -translate-x-1/2 w-[800px] h-[400px] pointer-events-none ${
+            isLight
+              ? 'bg-[radial-gradient(ellipse,rgba(37,99,235,0.04)_0%,transparent_70%)]'
+              : 'bg-[radial-gradient(ellipse,rgba(37,99,235,0.10)_0%,transparent_70%)]'
+          }`}
+        />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           {/* Header */}
           <div className="text-center max-w-3xl mx-auto mb-14">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#121D30] border border-[#24304A] text-xs font-semibold text-[#DDCDA8] mb-4 shadow-sm">
-              <Sparkles className="w-3.5 h-3.5 text-[#D9C9A3]" />
+            <div
+              className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border text-xs font-semibold mb-4 shadow-sm ${
+                isLight
+                  ? 'bg-[#FFFFFF] border-[#C7D6EE] text-[#1D4ED8]'
+                  : 'bg-[#0D162B] border-[#1D3566] text-[#A3E635]'
+              }`}
+            >
+              <Sparkles className={`w-3.5 h-3.5 ${isLight ? 'text-[#2563EB]' : 'text-[#A3E635]'}`} />
               <span>BẢNG GIÁ DỊCH VỤ</span>
             </div>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold font-serif-display text-[#F1ECE2] tracking-tight">
+            <h1
+              className={`text-3xl sm:text-4xl md:text-5xl font-bold font-serif-display tracking-tight ${
+                isLight ? 'text-[#06080D]' : 'text-[#F4F7FB]'
+              }`}
+            >
               {t('pricingTitle')}
             </h1>
-            <p className="text-[#9AA3B5] text-sm sm:text-base mt-3 max-w-xl mx-auto leading-relaxed">
+            <p
+              className={`text-sm sm:text-base mt-3 max-w-xl mx-auto leading-relaxed ${
+                isLight ? 'text-[#475569]' : 'text-[#9BAAC6]'
+              }`}
+            >
               {t('pricingSubtitle')}
             </p>
           </div>
@@ -122,52 +155,89 @@ export const PublicPricing: React.FC = () => {
                   key={plan.id}
                   className={`relative rounded-2xl p-7 flex flex-col justify-between transition-all duration-300 ${
                     plan.isHot
-                      ? 'bg-[#16213A] border-2 border-[#D9C9A3] shadow-2xl shadow-[#D9C9A3]/10 md:-translate-y-2 z-10'
-                      : 'bg-[#121D30] border border-[#24304A] hover:border-[#D9C9A3]/50 hover:bg-[#16213A]/70'
+                      ? isLight
+                        ? 'bg-[#FFFFFF] border-2 border-[#2563EB] shadow-2xl shadow-[#2563EB]/15 md:-translate-y-2 z-10'
+                        : 'bg-[#101E3A] border-2 border-[#A3E635] shadow-2xl shadow-[#A3E635]/10 md:-translate-y-2 z-10'
+                      : isLight
+                        ? 'bg-[#FFFFFF] border border-[#C7D6EE] hover:border-[#2563EB]/60 shadow-sm'
+                        : 'bg-[#0D162B] border border-[#1D3566] hover:border-[#2563EB] hover:bg-[#101E3A]/85'
                   }`}
                 >
                   {plan.isHot && (
-                    <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-[#D9C9A3] text-[#0E1726] text-[11px] font-extrabold uppercase tracking-wider shadow-md flex items-center gap-1.5">
-                      <Sparkles className="w-3.5 h-3.5 text-[#0E1726]" />
+                    <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-[#A3E635] text-[#06080D] text-[11px] font-extrabold uppercase tracking-wider shadow-md flex items-center gap-1.5">
+                      <Sparkles className="w-3.5 h-3.5 text-[#06080D]" />
                       <span>{t('hotBadge')}</span>
                     </div>
                   )}
 
                   <div>
                     <div className="flex items-center justify-between">
-                      <h3 className="text-xl font-bold text-[#F1ECE2]">{plan.name}</h3>
+                      <h3 className={`text-xl font-bold ${isLight ? 'text-[#06080D]' : 'text-[#F4F7FB]'}`}>
+                        {plan.name}
+                      </h3>
                       {plan.discountBadge && (
-                        <span className="px-2.5 py-0.5 rounded-full bg-[#D9C9A3]/15 text-[#DDCDA8] text-[11px] font-bold border border-[#D9C9A3]/30">
+                        <span
+                          className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${
+                            isLight
+                              ? 'bg-[#E4ECF9] text-[#1D4ED8] border-[#C7D6EE]'
+                              : 'bg-[#2563EB]/20 text-[#60A5FA] border-[#2563EB]/40'
+                          }`}
+                        >
                           {plan.discountBadge}
                         </span>
                       )}
                     </div>
 
                     <div className="mt-4 flex items-baseline gap-2">
-                      <span className="text-3xl sm:text-4xl font-extrabold text-[#F1ECE2] tracking-tight">
+                      <span
+                        className={`text-3xl sm:text-4xl font-extrabold tracking-tight ${
+                          isLight ? 'text-[#06080D]' : 'text-[#F4F7FB]'
+                        }`}
+                      >
                         {plan.price}
                       </span>
-                      <span className="text-xs text-[#9AA3B5] font-medium">{plan.period}</span>
+                      <span className={`text-xs font-medium ${isLight ? 'text-[#475569]' : 'text-[#9BAAC6]'}`}>
+                        {plan.period}
+                      </span>
                     </div>
 
                     {plan.originalPrice && (
-                      <p className="text-xs text-[#646E84] line-through mt-1">
+                      <p className={`text-xs line-through mt-1 ${isLight ? 'text-[#64748B]' : 'text-[#66789C]'}`}>
                         Giá gốc: {plan.originalPrice}
                       </p>
                     )}
 
-                    <div className="my-5 p-3.5 rounded-xl bg-[#0E1726] border border-[#24304A] flex items-center justify-between text-xs">
-                      <span className="text-[#9AA3B5]">Dung lượng Credits:</span>
-                      <span className="font-bold text-[#DDCDA8] flex items-center gap-1.5">
-                        <Zap className="w-3.5 h-3.5 text-[#D9C9A3]" />
+                    <div
+                      className={`my-5 p-3.5 rounded-xl border flex items-center justify-between text-xs ${
+                        isLight
+                          ? 'bg-[#EAF0FA] border-[#C7D6EE]'
+                          : 'bg-[#06080D] border-[#1D3566]'
+                      }`}
+                    >
+                      <span className={isLight ? 'text-[#475569]' : 'text-[#9BAAC6]'}>Dung lượng Credits:</span>
+                      <span
+                        className={`font-bold flex items-center gap-1.5 ${
+                          isLight ? 'text-[#1D4ED8]' : 'text-[#A3E635]'
+                        }`}
+                      >
+                        <Zap className={`w-3.5 h-3.5 ${isLight ? 'text-[#2563EB]' : 'text-[#A3E635]'}`} />
                         {plan.credits}
                       </span>
                     </div>
 
                     <ul className="space-y-3 mb-8">
                       {plan.features.map((feat, idx) => (
-                        <li key={idx} className="flex items-start gap-2.5 text-xs text-[#CBD5E1] leading-relaxed">
-                          <Check className="w-4 h-4 text-[#D9C9A3] shrink-0 mt-0.5" />
+                        <li
+                          key={idx}
+                          className={`flex items-start gap-2.5 text-xs leading-relaxed ${
+                            isLight ? 'text-[#334155]' : 'text-[#CBD5E1]'
+                          }`}
+                        >
+                          <Check
+                            className={`w-4 h-4 shrink-0 mt-0.5 ${
+                              isLight ? 'text-[#2563EB]' : 'text-[#A3E635]'
+                            }`}
+                          />
                           <span>{feat}</span>
                         </li>
                       ))}
@@ -176,7 +246,13 @@ export const PublicPricing: React.FC = () => {
 
                   <div>
                     {isCurrent ? (
-                      <div className="w-full py-3.5 rounded-xl bg-[#0E1726] text-center text-xs font-bold text-[#DDCDA8] border border-[#D9C9A3]/40">
+                      <div
+                        className={`w-full py-3.5 rounded-xl text-center text-xs font-bold border ${
+                          isLight
+                            ? 'bg-[#EAF0FA] text-[#1D4ED8] border-[#2563EB]/40'
+                            : 'bg-[#06080D] text-[#A3E635] border-[#A3E635]/40'
+                        }`}
+                      >
                         {t('currentPlan')}
                       </div>
                     ) : (
@@ -184,8 +260,10 @@ export const PublicPricing: React.FC = () => {
                         onClick={() => handleSelectPlan(plan.id)}
                         className={`w-full py-3.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                           plan.isHot
-                            ? 'bg-[#D9C9A3] hover:bg-[#EDE2C8] text-[#0E1726] shadow-lg shadow-[#D9C9A3]/20 hover:scale-[1.01]'
-                            : 'bg-[#16213A] hover:bg-[#1C2944] border border-[#24304A] hover:border-[#D9C9A3]/60 text-[#F1ECE2]'
+                            ? 'bg-[#A3E635] hover:bg-[#BEF264] text-[#06080D] shadow-lg shadow-[#A3E635]/20 hover:scale-[1.01]'
+                            : isLight
+                              ? 'bg-[#2563EB] hover:bg-[#1D4ED8] text-[#FFFFFF] shadow-sm'
+                              : 'bg-[#101E3A] hover:bg-[#162952] border border-[#1D3566] hover:border-[#2563EB] text-[#F4F7FB]'
                         }`}
                       >
                         <span>{t('btnSelectPlan')}</span>
@@ -200,62 +278,71 @@ export const PublicPricing: React.FC = () => {
 
           {/* Trust & Guarantee Grid */}
           <div className="mt-16 max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="p-4 rounded-xl bg-[#121D30] border border-[#24304A] flex items-start gap-3">
-              <div className="w-9 h-9 rounded-lg bg-[#16213A] border border-[#24304A] flex items-center justify-center text-[#D9C9A3] shrink-0">
-                <Zap className="w-4 h-4" />
-              </div>
-              <div>
-                <h4 className="text-xs font-bold text-[#F1ECE2]">Kích Hoạt Tức Thì</h4>
-                <p className="text-[11px] text-[#9AA3B5] mt-0.5 leading-snug">
-                  Cộng Credits vào tài khoản tự động trong 30 giây sau giao dịch.
-                </p>
-              </div>
-            </div>
-
-            <div className="p-4 rounded-xl bg-[#121D30] border border-[#24304A] flex items-start gap-3">
-              <div className="w-9 h-9 rounded-lg bg-[#16213A] border border-[#24304A] flex items-center justify-center text-[#D9C9A3] shrink-0">
-                <Receipt className="w-4 h-4" />
-              </div>
-              <div>
-                <h4 className="text-xs font-bold text-[#F1ECE2]">Hóa Đơn VAT Điện Tử</h4>
-                <p className="text-[11px] text-[#9AA3B5] mt-0.5 leading-snug">
-                  Hỗ trợ xuất hóa đơn đỏ hợp lệ cho doanh nghiệp & văn phòng.
-                </p>
-              </div>
-            </div>
-
-            <div className="p-4 rounded-xl bg-[#121D30] border border-[#24304A] flex items-start gap-3">
-              <div className="w-9 h-9 rounded-lg bg-[#16213A] border border-[#24304A] flex items-center justify-center text-[#D9C9A3] shrink-0">
-                <ShieldCheck className="w-4 h-4" />
-              </div>
-              <div>
-                <h4 className="text-xs font-bold text-[#F1ECE2]">Bảo Mật & Riêng Tư</h4>
-                <p className="text-[11px] text-[#9AA3B5] mt-0.5 leading-snug">
-                  Toàn bộ file thiết kế và hình ảnh dự án được mã hóa bảo mật.
-                </p>
-              </div>
-            </div>
-
-            <div className="p-4 rounded-xl bg-[#121D30] border border-[#24304A] flex items-start gap-3">
-              <div className="w-9 h-9 rounded-lg bg-[#16213A] border border-[#24304A] flex items-center justify-center text-[#D9C9A3] shrink-0">
-                <Headphones className="w-4 h-4" />
-              </div>
-              <div>
-                <h4 className="text-xs font-bold text-[#F1ECE2]">Hỗ Trợ Kỹ Thuật 24/7</h4>
-                <p className="text-[11px] text-[#9AA3B5] mt-0.5 leading-snug">
-                  Đội ngũ chuyên viên KTS hỗ trợ tối ưu prompt qua Hotline/Zalo.
-                </p>
-              </div>
-            </div>
+            {[
+              {
+                icon: Zap,
+                title: 'Kích Hoạt Tức Thì',
+                desc: 'Cộng Credits vào tài khoản tự động trong 30 giây sau giao dịch.',
+              },
+              {
+                icon: Receipt,
+                title: 'Hóa Đơn VAT Điện Tử',
+                desc: 'Hỗ trợ xuất hóa đơn đỏ hợp lệ cho doanh nghiệp & văn phòng.',
+              },
+              {
+                icon: ShieldCheck,
+                title: 'Bảo Mật & Riêng Tư',
+                desc: 'Toàn bộ file thiết kế và hình ảnh dự án được mã hóa bảo mật.',
+              },
+              {
+                icon: Headphones,
+                title: 'Hỗ Trợ Kỹ Thuật 24/7',
+                desc: 'Đội ngũ chuyên viên KTS hỗ trợ tối ưu prompt qua Hotline/Zalo.',
+              },
+            ].map((item, idx) => {
+              const Icon = item.icon;
+              return (
+                <div
+                  key={idx}
+                  className={`p-4 rounded-xl border flex items-start gap-3 transition-colors ${
+                    isLight
+                      ? 'bg-[#FFFFFF] border-[#C7D6EE]'
+                      : 'bg-[#0D162B] border-[#1D3566]'
+                  }`}
+                >
+                  <div
+                    className={`w-9 h-9 rounded-lg border flex items-center justify-center shrink-0 ${
+                      isLight
+                        ? 'bg-[#E4ECF9] border-[#C7D6EE] text-[#2563EB]'
+                        : 'bg-[#101E3A] border-[#1D3566] text-[#A3E635]'
+                    }`}
+                  >
+                    <Icon className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h4 className={`text-xs font-bold ${isLight ? 'text-[#06080D]' : 'text-[#F4F7FB]'}`}>
+                      {item.title}
+                    </h4>
+                    <p className={`text-[11px] mt-0.5 leading-snug ${isLight ? 'text-[#475569]' : 'text-[#9BAAC6]'}`}>
+                      {item.desc}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
           </div>
 
           {/* FAQ Section */}
           <div className="mt-16 max-w-3xl mx-auto">
             <div className="text-center mb-8">
-              <h2 className="text-xl sm:text-2xl font-bold font-serif-display text-[#F1ECE2]">
+              <h2
+                className={`text-xl sm:text-2xl font-bold font-serif-display ${
+                  isLight ? 'text-[#06080D]' : 'text-[#F4F7FB]'
+                }`}
+              >
                 Câu Hỏi Thường Gặp
               </h2>
-              <p className="text-xs sm:text-sm text-[#9AA3B5] mt-1">
+              <p className={`text-xs sm:text-sm mt-1 ${isLight ? 'text-[#475569]' : 'text-[#9BAAC6]'}`}>
                 Giải đáp nhanh các thắc mắc về thanh toán và quyền lợi sử dụng
               </p>
             </div>
@@ -266,23 +353,35 @@ export const PublicPricing: React.FC = () => {
                 return (
                   <div
                     key={index}
-                    className="rounded-xl bg-[#121D30] border border-[#24304A] overflow-hidden transition-all"
+                    className={`rounded-xl border overflow-hidden transition-all ${
+                      isLight
+                        ? 'bg-[#FFFFFF] border-[#C7D6EE]'
+                        : 'bg-[#0D162B] border-[#1D3566]'
+                    }`}
                   >
                     <button
                       onClick={() => setOpenFaq(isOpen ? null : index)}
-                      className="w-full p-4 text-left flex items-center justify-between gap-4 cursor-pointer hover:bg-[#16213A]/50 transition-colors"
+                      className={`w-full p-4 text-left flex items-center justify-between gap-4 cursor-pointer transition-colors ${
+                        isLight ? 'hover:bg-[#EAF0FA]/60' : 'hover:bg-[#101E3A]/60'
+                      }`}
                     >
-                      <span className="text-xs sm:text-sm font-semibold text-[#F1ECE2]">
+                      <span className={`text-xs sm:text-sm font-semibold ${isLight ? 'text-[#06080D]' : 'text-[#F4F7FB]'}`}>
                         {faq.q}
                       </span>
                       <ChevronDown
-                        className={`w-4 h-4 text-[#DDCDA8] shrink-0 transition-transform duration-200 ${
-                          isOpen ? 'rotate-180' : ''
-                        }`}
+                        className={`w-4 h-4 shrink-0 transition-transform duration-200 ${
+                          isLight ? 'text-[#2563EB]' : 'text-[#A3E635]'
+                        } ${isOpen ? 'rotate-180' : ''}`}
                       />
                     </button>
                     {isOpen && (
-                      <div className="px-4 pb-4 pt-1 text-xs text-[#9AA3B5] leading-relaxed border-t border-[#24304A]/60">
+                      <div
+                        className={`px-4 pb-4 pt-2 text-xs leading-relaxed border-t ${
+                          isLight
+                            ? 'text-[#475569] border-[#DCE5F5]'
+                            : 'text-[#9BAAC6] border-[#1D3566]/60'
+                        }`}
+                      >
                         {faq.a}
                       </div>
                     )}

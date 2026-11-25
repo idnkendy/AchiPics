@@ -17,7 +17,8 @@ import {
 } from '../../lib/supabase';
 
 export const AuthPage: React.FC = () => {
-  const { setActiveRoute, setUser } = useApp();
+  const { setActiveRoute, setUser, theme } = useApp();
+  const isLight = theme === 'light';
 
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
   const [email, setEmail] = useState('');
@@ -28,7 +29,6 @@ export const AuthPage: React.FC = () => {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
-  // Submit Handler for Email & Password or Register
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
@@ -90,7 +90,6 @@ export const AuthPage: React.FC = () => {
     }
   };
 
-  // OAuth Google
   const handleGoogleOAuth = async () => {
     setErrorMsg(null);
     const cfg = getSupabaseConfig();
@@ -106,39 +105,61 @@ export const AuthPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0E1726] text-[#F1ECE2] flex flex-col items-center justify-center p-4 font-sans relative selection:bg-[#D9C9A3] selection:text-[#0E1726]">
-      {/* Ambient background glow */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-[radial-gradient(ellipse,rgba(217,201,163,0.08)_0%,transparent_70%)] pointer-events-none" />
+    <div
+      className={`min-h-screen flex flex-col items-center justify-center p-4 font-sans relative transition-colors ${
+        isLight
+          ? 'bg-[#F4F7FC] text-[#06080D] selection:bg-[#2563EB] selection:text-[#FFFFFF]'
+          : 'bg-[#06080D] text-[#F4F7FB] selection:bg-[#A3E635] selection:text-[#06080D]'
+      }`}
+    >
+      {/* Ambient Cobalt + Lime background glow */}
+      <div
+        className={`absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[640px] h-[420px] pointer-events-none ${
+          isLight
+            ? 'bg-[radial-gradient(ellipse,rgba(37,99,235,0.10)_0%,transparent_70%)]'
+            : 'bg-[radial-gradient(ellipse,rgba(37,99,235,0.22)_0%,rgba(163,230,53,0.06)_45%,transparent_72%)]'
+        }`}
+      />
 
       {/* Top Bar: Back button */}
       <div className="absolute top-6 left-6 z-20">
         <button
           onClick={() => setActiveRoute('/')}
-          className="flex items-center gap-2 text-xs font-semibold text-[#9AA3B5] hover:text-[#F1ECE2] transition-colors cursor-pointer"
+          className={`flex items-center gap-2 text-xs font-semibold transition-colors cursor-pointer ${
+            isLight ? 'text-[#475569] hover:text-[#1D4ED8]' : 'text-[#9BAAC6] hover:text-[#A3E635]'
+          }`}
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>← Về trang chủ</span>
+          <span>Về trang chủ</span>
         </button>
       </div>
 
       <div className="w-full max-w-md my-12 relative z-10">
         {/* Main Auth Card */}
-        <div className="p-8 sm:p-9 rounded-3xl bg-[#121D30] border border-[#24304A] shadow-2xl relative">
+        <div
+          className={`p-8 sm:p-9 rounded-3xl border shadow-2xl relative ${
+            isLight ? 'bg-[#FFFFFF] border-[#C7D6EE]' : 'bg-[#0D162B] border-[#1D3566]'
+          }`}
+        >
           {/* Logo & Header */}
           <div className="text-center mb-6">
-            <div className="w-11 h-11 rounded-xl bg-[#D9C9A3] flex items-center justify-center text-[#0E1726] font-extrabold text-xl shadow-md mx-auto mb-3">
+            <div className="w-11 h-11 rounded-xl bg-[#2563EB] border border-[#A3E635]/45 flex items-center justify-center text-[#A3E635] font-extrabold text-xl shadow-md mx-auto mb-3">
               A
             </div>
-            <h1 className="text-2xl font-bold tracking-tight text-[#F1ECE2]">
-              ArchiPics
+            <h1 className={`text-2xl font-bold tracking-tight ${isLight ? 'text-[#06080D]' : 'text-[#F4F7FB]'}`}>
+              AchiPics
             </h1>
-            <p className="text-xs text-[#9AA3B5] mt-1.5">
+            <p className={`text-xs mt-1.5 ${isLight ? 'text-[#475569]' : 'text-[#9BAAC6]'}`}>
               Nền tảng AI hàng đầu hỗ trợ KTS & NTK kiến tạo không gian
             </p>
           </div>
 
-          {/* Auth Mode Tabs: Login & Register only */}
-          <div className="grid grid-cols-2 gap-1 p-1 bg-[#111B2D] border border-[#24304A] rounded-xl mb-5">
+          {/* Auth Mode Tabs */}
+          <div
+            className={`grid grid-cols-2 gap-1 p-1 border rounded-xl mb-5 ${
+              isLight ? 'bg-[#EAF0FA] border-[#C7D6EE]' : 'bg-[#0A101E] border-[#1D3566]'
+            }`}
+          >
             <button
               type="button"
               onClick={() => {
@@ -148,8 +169,10 @@ export const AuthPage: React.FC = () => {
               }}
               className={`py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
                 authMode === 'login'
-                  ? 'bg-[#D9C9A3] text-[#0E1726] font-bold shadow-xs'
-                  : 'text-[#9AA3B5] hover:text-[#F1ECE2]'
+                  ? 'bg-[#A3E635] text-[#06080D] font-bold shadow-xs'
+                  : isLight
+                    ? 'text-[#475569] hover:text-[#06080D]'
+                    : 'text-[#9BAAC6] hover:text-[#F4F7FB]'
               }`}
             >
               Đăng nhập
@@ -163,20 +186,26 @@ export const AuthPage: React.FC = () => {
               }}
               className={`py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
                 authMode === 'register'
-                  ? 'bg-[#D9C9A3] text-[#0E1726] font-bold shadow-xs'
-                  : 'text-[#9AA3B5] hover:text-[#F1ECE2]'
+                  ? 'bg-[#A3E635] text-[#06080D] font-bold shadow-xs'
+                  : isLight
+                    ? 'text-[#475569] hover:text-[#06080D]'
+                    : 'text-[#9BAAC6] hover:text-[#F4F7FB]'
               }`}
             >
               Đăng ký
             </button>
           </div>
 
-          {/* Social OAuth: Google Button only */}
+          {/* Social OAuth: Google Button */}
           <div className="mb-5">
             <button
               type="button"
               onClick={handleGoogleOAuth}
-              className="w-full py-2.5 px-3 rounded-xl bg-[#16213A] hover:bg-[#1C2944] border border-[#24304A] hover:border-[#D9C9A3]/40 text-[#F1ECE2] text-xs font-medium flex items-center justify-center gap-2.5 transition-all cursor-pointer"
+              className={`w-full py-2.5 px-3 rounded-xl border text-xs font-medium flex items-center justify-center gap-2.5 transition-all cursor-pointer ${
+                isLight
+                  ? 'bg-[#EAF0FA] hover:bg-[#D6E3F8] border-[#C7D6EE] hover:border-[#2563EB] text-[#06080D]'
+                  : 'bg-[#101E3A] hover:bg-[#162952] border-[#1D3566] hover:border-[#2563EB] text-[#F4F7FB]'
+              }`}
             >
               <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
                 <path
@@ -201,11 +230,11 @@ export const AuthPage: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-3 my-4">
-            <span className="flex-1 h-px bg-[#24304A]" />
-            <span className="text-[11px] text-[#646E84] uppercase tracking-wider">
+            <span className={`flex-1 h-px ${isLight ? 'bg-[#C7D6EE]' : 'bg-[#1D3566]'}`} />
+            <span className={`text-[11px] uppercase tracking-wider ${isLight ? 'text-[#64748B]' : 'text-[#66789C]'}`}>
               Hoặc với Email & Mật khẩu
             </span>
-            <span className="flex-1 h-px bg-[#24304A]" />
+            <span className={`flex-1 h-px ${isLight ? 'bg-[#C7D6EE]' : 'bg-[#1D3566]'}`} />
           </div>
 
           {/* Feedback messages */}
@@ -228,7 +257,7 @@ export const AuthPage: React.FC = () => {
             {authMode === 'register' && (
               <>
                 <div>
-                  <label className="text-xs font-semibold text-[#9AA3B5] block mb-1">
+                  <label className={`text-xs font-semibold block mb-1 ${isLight ? 'text-[#475569]' : 'text-[#9BAAC6]'}`}>
                     Họ và Tên
                   </label>
                   <div className="relative">
@@ -238,14 +267,18 @@ export const AuthPage: React.FC = () => {
                       placeholder="KTS Nguyễn Văn A"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="w-full pl-9 pr-3 py-2.5 bg-[#111B2D] border border-[#24304A] rounded-xl text-xs text-[#F1ECE2] placeholder-[#646E84] focus:outline-none focus:border-[#D9C9A3]"
+                      className={`w-full pl-9 pr-3 py-2.5 border rounded-xl text-xs focus:outline-none ${
+                        isLight
+                          ? 'bg-[#EAF0FA] border-[#C7D6EE] text-[#06080D] placeholder-[#64748B] focus:border-[#2563EB]'
+                          : 'bg-[#0A101E] border-[#1D3566] text-[#F4F7FB] placeholder-[#66789C] focus:border-[#2563EB]'
+                      }`}
                     />
-                    <UserIcon className="w-4 h-4 text-[#646E84] absolute left-3 top-3" />
+                    <UserIcon className={`w-4 h-4 absolute left-3 top-3 ${isLight ? 'text-[#64748B]' : 'text-[#66789C]'}`} />
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-xs font-semibold text-[#9AA3B5] block mb-1">
+                  <label className={`text-xs font-semibold block mb-1 ${isLight ? 'text-[#475569]' : 'text-[#9BAAC6]'}`}>
                     Số điện thoại
                   </label>
                   <div className="relative">
@@ -254,16 +287,20 @@ export const AuthPage: React.FC = () => {
                       placeholder="0901234567"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      className="w-full pl-9 pr-3 py-2.5 bg-[#111B2D] border border-[#24304A] rounded-xl text-xs text-[#F1ECE2] placeholder-[#646E84] focus:outline-none focus:border-[#D9C9A3]"
+                      className={`w-full pl-9 pr-3 py-2.5 border rounded-xl text-xs focus:outline-none ${
+                        isLight
+                          ? 'bg-[#EAF0FA] border-[#C7D6EE] text-[#06080D] placeholder-[#64748B] focus:border-[#2563EB]'
+                          : 'bg-[#0A101E] border-[#1D3566] text-[#F4F7FB] placeholder-[#66789C] focus:border-[#2563EB]'
+                      }`}
                     />
-                    <Phone className="w-4 h-4 text-[#646E84] absolute left-3 top-3" />
+                    <Phone className={`w-4 h-4 absolute left-3 top-3 ${isLight ? 'text-[#64748B]' : 'text-[#66789C]'}`} />
                   </div>
                 </div>
               </>
             )}
 
             <div>
-              <label className="text-xs font-semibold text-[#9AA3B5] block mb-1">
+              <label className={`text-xs font-semibold block mb-1 ${isLight ? 'text-[#475569]' : 'text-[#9BAAC6]'}`}>
                 Email
               </label>
               <div className="relative">
@@ -273,14 +310,18 @@ export const AuthPage: React.FC = () => {
                   placeholder="name@company.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2.5 bg-[#111B2D] border border-[#24304A] rounded-xl text-xs text-[#F1ECE2] placeholder-[#646E84] focus:outline-none focus:border-[#D9C9A3]"
+                  className={`w-full pl-9 pr-3 py-2.5 border rounded-xl text-xs focus:outline-none ${
+                    isLight
+                      ? 'bg-[#EAF0FA] border-[#C7D6EE] text-[#06080D] placeholder-[#64748B] focus:border-[#2563EB]'
+                      : 'bg-[#0A101E] border-[#1D3566] text-[#F4F7FB] placeholder-[#66789C] focus:border-[#2563EB]'
+                  }`}
                 />
-                <Mail className="w-4 h-4 text-[#646E84] absolute left-3 top-3" />
+                <Mail className={`w-4 h-4 absolute left-3 top-3 ${isLight ? 'text-[#64748B]' : 'text-[#66789C]'}`} />
               </div>
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-[#9AA3B5] block mb-1">
+              <label className={`text-xs font-semibold block mb-1 ${isLight ? 'text-[#475569]' : 'text-[#9BAAC6]'}`}>
                 Mật khẩu
               </label>
               <div className="relative">
@@ -291,20 +332,24 @@ export const AuthPage: React.FC = () => {
                   placeholder="Tối thiểu 6 ký tự"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2.5 bg-[#111B2D] border border-[#24304A] rounded-xl text-xs text-[#F1ECE2] placeholder-[#646E84] focus:outline-none focus:border-[#D9C9A3]"
+                  className={`w-full pl-9 pr-3 py-2.5 border rounded-xl text-xs focus:outline-none ${
+                    isLight
+                      ? 'bg-[#EAF0FA] border-[#C7D6EE] text-[#06080D] placeholder-[#64748B] focus:border-[#2563EB]'
+                      : 'bg-[#0A101E] border-[#1D3566] text-[#F4F7FB] placeholder-[#66789C] focus:border-[#2563EB]'
+                  }`}
                 />
-                <Lock className="w-4 h-4 text-[#646E84] absolute left-3 top-3" />
+                <Lock className={`w-4 h-4 absolute left-3 top-3 ${isLight ? 'text-[#64748B]' : 'text-[#66789C]'}`} />
               </div>
             </div>
 
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-3.5 rounded-xl bg-[#D9C9A3] hover:bg-[#E4D5B2] text-[#0E1726] font-bold text-xs shadow-lg shadow-[#D9C9A3]/20 transition-all cursor-pointer mt-4 flex items-center justify-center gap-2"
+              className="w-full py-3.5 rounded-xl bg-[#A3E635] hover:bg-[#BEF264] text-[#06080D] font-bold text-xs shadow-lg shadow-[#A3E635]/20 transition-all cursor-pointer mt-4 flex items-center justify-center gap-2"
             >
               {isLoading ? (
                 <>
-                  <span className="w-4 h-4 border-2 border-[#0E1726] border-t-transparent rounded-full animate-spin" />
+                  <span className="w-4 h-4 border-2 border-[#06080D] border-t-transparent rounded-full animate-spin" />
                   <span>Đang xử lý...</span>
                 </>
               ) : authMode === 'register' ? (

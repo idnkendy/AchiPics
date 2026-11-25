@@ -138,7 +138,55 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       return 'dark';
     }
   });
-  const [activeRoute, setActiveRoute] = useState<string>('/');
+  const KNOWN_ROUTES = new Set([
+    '/',
+    '/image',
+    '/auth',
+    '/pricing',
+    '/payment',
+    '/contacts',
+    '/terms-of-service',
+    '/term-of-service',
+    '/privacy-policy',
+    '/history',
+    '/profile',
+  ]);
+
+  const normalizeRoute = (path: string): string => {
+    const clean = path.length > 1 ? path.replace(/\/+$/, '') : path;
+    if (clean === '/term-of-service') return '/terms-of-service';
+    return KNOWN_ROUTES.has(clean) ? clean : '/';
+  };
+
+  const [activeRoute, setActiveRouteState] = useState<string>(() => {
+    try {
+      return normalizeRoute(window.location.pathname);
+    } catch {
+      return '/';
+    }
+  });
+
+  const setActiveRoute = (route: string) => {
+    const target = normalizeRoute(route);
+    setActiveRouteState(target);
+    try {
+      if (window.location.pathname !== target) {
+        window.history.pushState({}, '', target);
+      }
+      window.scrollTo({ top: 0, behavior: 'auto' });
+    } catch {
+      // Ignore history errors
+    }
+  };
+
+  useEffect(() => {
+    const handlePopState = () => {
+      setActiveRouteState(normalizeRoute(window.location.pathname));
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
   const [activeMainTool, setActiveMainTool] = useState<MainToolType>('render');
   const [activeExtendedTool, setActiveExtendedTool] = useState<ExtendedToolType | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);

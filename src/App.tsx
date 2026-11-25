@@ -21,6 +21,7 @@ import { HistoryPanel } from './components/pages/HistoryPanel';
 import { UserProfile } from './components/pages/UserProfile';
 import { ContactPage } from './components/pages/ContactPage';
 import { TermsPage } from './components/pages/TermsPage';
+import { PrivacyPolicyPage } from './components/pages/PrivacyPolicyPage';
 
 const AppContent: React.FC = () => {
   const { activeRoute, activeMainTool, activeExtendedTool, theme } = useApp();
@@ -46,20 +47,22 @@ const AppContent: React.FC = () => {
     return <ContactPage />;
   }
 
-  if (activeRoute === '/terms-of-service') {
+  if (activeRoute === '/terms-of-service' || activeRoute === '/term-of-service') {
     return <TermsPage />;
   }
 
-  // 2. Workspace pages with AppHeader (64px) + NavigationBar (48px)
+  if (activeRoute === '/privacy-policy') {
+    return <PrivacyPolicyPage />;
+  }
+
+  // 2. Workspace pages with AppHeader (64px) + Floating NavigationBar (52px)
   return (
-    <div className={`min-h-screen flex flex-col transition-colors ${
-      theme === 'light' ? 'bg-[#F8F5EE] text-[#121D30]' : 'bg-[#0E1726] text-[#F1ECE2]'
-    }`}>
+    <div className="min-h-screen flex flex-col transition-colors bg-[#F8F5EE] dark:bg-[#0E1726] text-[#121D30] dark:text-[#F1ECE2]">
       <AppHeader />
       <NavigationBar />
 
-      {/* Main workspace container with 112px top offset for header + subnav */}
-      <main className="pt-[112px] flex-1 flex flex-col">
+      {/* Main workspace container with 116px top offset for header + floating subnav */}
+      <main className="pt-[116px] flex-1 flex flex-col">
         {activeRoute === '/history' ? (
           <HistoryPanel />
         ) : activeRoute === '/profile' ? (

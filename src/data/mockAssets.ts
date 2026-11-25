@@ -59,8 +59,8 @@ export const ARCH_ASSETS = {
       <!-- Water Reflection Glow -->
       <rect x="300" y="535" width="440" height="70" fill="#ff9d42" opacity="0.35" filter="blur(8px)"/>
       <!-- Architectural Framing Badge -->
-      <text x="50" y="60" fill="#ffffff" font-family="'Inter',sans-serif" font-weight="700" font-size="20" letter-spacing="3">OPZEN ARCHITECTURE</text>
-      <text x="50" y="85" fill="#9d4edd" font-family="'Inter',sans-serif" font-weight="600" font-size="13" letter-spacing="1">GEMINI 2.0 NEURAL RENDER · 4K</text>
+      <text x="50" y="60" fill="#ffffff" font-family="'Inter',sans-serif" font-weight="700" font-size="20" letter-spacing="3">ACHIPICS ARCHITECTURE</text>
+      <text x="50" y="85" fill="#A3E635" font-family="'Inter',sans-serif" font-weight="600" font-size="13" letter-spacing="1">GEMINI 2.0 NEURAL RENDER · 4K</text>
     </svg>
   `),
 
@@ -113,7 +113,7 @@ export const ARCH_ASSETS = {
       <polygon points="700,60 1140,60 780,675 320,675" fill="#ffffff" opacity="0.18"/>
       <!-- Branding Tag -->
       <text x="50" y="60" fill="#2c2825" font-family="'Inter',sans-serif" font-weight="700" font-size="20" letter-spacing="3">JAPANDI LIVING</text>
-      <text x="50" y="85" fill="#7f13ec" font-family="'Inter',sans-serif" font-weight="600" font-size="13" letter-spacing="1">INTERIOR RENDERING · GEMINI 3.0</text>
+      <text x="50" y="85" fill="#2563EB" font-family="'Inter',sans-serif" font-weight="600" font-size="13" letter-spacing="1">INTERIOR RENDERING · GEMINI 3.0</text>
     </svg>
   `),
 
@@ -188,7 +188,7 @@ export const ARCH_ASSETS = {
       <!-- Living Area & Kitchen -->
       <polygon points="350,255 490,185 640,260 500,340" fill="#52525b"/>
       <!-- Sofa Isometric -->
-      <polygon points="450,240 520,205 540,215 470,250" fill="#7f13ec"/>
+      <polygon points="450,240 520,205 540,215 470,250" fill="#2563EB"/>
       <!-- Dining Table -->
       <polygon points="420,285 470,260 495,275 445,300" fill="#d97706"/>
       <!-- Terrace with Green Plants -->
@@ -197,7 +197,7 @@ export const ARCH_ASSETS = {
       <circle cx="610" cy="300" r="16" fill="#059669"/>
       <!-- Grid Dimensions Overlay -->
       <text x="400" y="520" fill="#a1a1aa" font-family="'Inter',sans-serif" font-weight="600" font-size="14" text-anchor="middle">TỔNG DIỆN TÍCH: 148 M² · 3 PHÒNG NGỦ · 2 WC</text>
-      <text x="400" y="545" fill="#7f13ec" font-family="'Inter',sans-serif" font-weight="700" font-size="12" letter-spacing="2" text-anchor="middle">ISOMETRIC 3D CAD CONVERTER</text>
+      <text x="400" y="545" fill="#A3E635" font-family="'Inter',sans-serif" font-weight="700" font-size="12" letter-spacing="2" text-anchor="middle">ISOMETRIC 3D CAD CONVERTER</text>
     </svg>
   `),
 
